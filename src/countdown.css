@@ -1,0 +1,162 @@
+.wrapper {
+  margin: 30px auto;
+  min-width: fit-content;
+  position: relative;
+
+  &:before,
+  &:after {
+    content: '';
+    display: block;
+    position: absolute;
+    width: 100%;
+    left: 0;
+    height: 20px;
+    z-index: 10;
+  }
+
+  &:before {
+    top: 0px;
+    background-size: 100%;
+    background-image: linear-gradient(to bottom, var(--bg-color) 0%, rgba(241, 97, 75, 0) 100%);
+  }
+
+  &:after {
+    bottom: 0px;
+    background-size: 100%;
+    background-image: linear-gradient(to bottom, rgba(241, 97, 75, 0) 0%, var(--bg-color) 100%);
+  }
+}
+
+.digit {
+  display: inline-block;
+  font-size: 50px;
+  color: var(--primary-color);
+  height: var(--digit-height);
+  line-height: 1;
+  filter: opacity(0.25);
+}
+
+.time-part-wrapper {
+  display: inline-block;
+  margin-right: 50px;
+  position: relative;
+
+  &:not(:last-child):after {
+    content: ':';
+    display: block;
+    width: 20px;
+    height: var(--digit-height);
+    position: absolute;
+    top: 0px;
+    right: -30px;
+    color: var(--transparent-color);
+    font-size: 50px;
+    line-height: 0.9;
+  }
+}
+
+.time-part {
+  width: 50px;
+  text-align: center;
+  height: var(--digit-height);
+  overflow: hidden;
+  display: inline-block;
+  margin-left: -5px;
+  box-sizing: border-box;
+
+  .digit-wrapper {
+    animation-timing-function: cubic-bezier(1, 0, 1, 0);
+  }
+
+  &.minutes {
+    &.tens .digit-wrapper {
+      animation-name: six-digits;
+      animation-duration: 3600s;
+      animation-iteration-count: 1;
+    }
+    &.ones .digit-wrapper {
+      animation-name: ten-digits;
+      animation-duration: 600s;
+      animation-iteration-count: 6;
+    }
+  }
+
+  &.seconds {
+    &.tens .digit-wrapper {
+      animation-name: six-digits;
+      animation-duration: 60s;
+      animation-iteration-count: 60;
+    }
+    &.ones .digit-wrapper {
+      animation-name: ten-digits;
+      animation-duration: 10s;
+      animation-iteration-count: 360;
+    }
+  }
+
+  &.hundredths {
+    &.tens .digit-wrapper {
+      animation-name: ten-digits;
+      animation-duration: 1s;
+      animation-iteration-count: 3600;
+    }
+    &.ones .digit-wrapper {
+      animation-name: ten-digits;
+      animation-duration: 0.1s;
+      animation-iteration-count: 36000;
+    }
+  }
+}
+
+@keyframes six-digits {
+  0% {
+    transform: translateY(-60px);
+  }
+  16.6667% {
+    transform: translateY(-120px);
+  }
+  33.3333% {
+    transform: translateY(-180px);
+  }
+  50% {
+    transform: translateY(-240px);
+  }
+  66.6667% {
+    transform: translateY(-300px);
+  }
+  83.3333% {
+    transform: translateY(-360px);
+  }
+}
+@keyframes ten-digits {
+  0% {
+    transform: translateY(-60px);
+  }
+  10% {
+    transform: translateY(-120px);
+  }
+  20% {
+    transform: translateY(-180px);
+  }
+  30% {
+    transform: translateY(-240px);
+  }
+  40% {
+    transform: translateY(-300px);
+  }
+  50% {
+    transform: translateY(-360px);
+  }
+  60% {
+    transform: translateY(-420px);
+  }
+  70% {
+    transform: translateY(-480px);
+  }
+  80% {
+    transform: translateY(-540px);
+  }
+  90% {
+    transform: translateY(-600px);
+  }
+}

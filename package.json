@@ -1,11 +1,11 @@
 {
-  "name": "chrome-extension-typescript-starter",
+  "name": "work-timer",
   "version": "1.0.0",
-  "description": "chrome-extension-typescript-starter",
+  "description": "Chrome Extension, TypeScript, Visual Studio Code",
   "main": "index.js",
   "scripts": {
-    "watch": "webpack --config webpack/webpack.dev.js --watch",
-    "build": "webpack --config webpack/webpack.prod.js",
+    "watch": "rspack build --config webpack/webpack.dev.js --watch",
+    "build": "rspack build --config webpack/webpack.prod.js",
     "clean": "rimraf dist",
     "test": "npx jest",
     "style": "prettier --write \"src/**/*.{ts,tsx}\""
@@ -17,24 +17,23 @@
     "url": "https://github.com/chibat/chrome-extension-typescript-starter.git"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "@swc/helpers": "^0.5.15",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@rspack/cli": "^1.2.7",
+    "@rspack/core": "^1.2.7",
     "@types/chrome": "0.0.158",
     "@types/jest": "^29.5.0",
     "@types/react": "^18.0.29",
     "@types/react-dom": "^18.0.11",
-    "copy-webpack-plugin": "^9.0.1",
     "glob": "^7.1.6",
     "jest": "^29.5.0",
-    "prettier": "^2.2.1",
-    "rimraf": "^3.0.2 ",
+    "prettier": "^3.5.3",
+    "rimraf": "^6.0.1",
     "ts-jest": "^29.1.0",
-    "ts-loader": "^8.0.0",
-    "typescript": "^5.0.4",
-    "webpack": "^5.94.0",
-    "webpack-cli": "^4.0.0",
-    "webpack-merge": "^5.0.0"
+    "typescript": "^5.8.2",
+    "webpack-merge": "^6.0.1"
   }
 }
