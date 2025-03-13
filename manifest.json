@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
 
-  "name": "Work timmer",
+  "name": "Work timer",
   "description": "Chrome Extension, TypeScript, Visual Studio Code",
   "version": "1.0",
 

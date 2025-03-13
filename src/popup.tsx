@@ -1,29 +1,20 @@
 import './popup.css';
 
-import React, { useEffect, useState } from 'react';
+import React, { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 
+import { ACTION, TimeRecord } from './types';
 import { Counter } from './counter';
-
-enum ACTION {
-  LOGIN = 'login',
-  LOGOUT = 'logout',
-}
 
 enum STATE {
   ONLINE = 'online',
   OFFLINE = 'offline',
 }
 
-type TimeRecord = {
-  action: ACTION;
-  time: string;
-};
-
 const Popup = () => {
   const [state, setState] = useState(STATE.OFFLINE);
   const [seconds, setSeconds] = useState(0);
-  const [worksheet, setWorksheet] = useState<[string, number][]>();
+  const [isWorksheetOpen, setIsWorksheetOpen] = useState(false);
 
   useEffect(() => {
     chrome.action.setBadgeText({ text: state === STATE.ONLINE ? 'in' : 'out' });
@@ -64,59 +55,13 @@ const Popup = () => {
     // return () => chrome.storage.onChanged.removeListener(cb);
   }, []);
 
-  const toggleWorksheet = () => {
-    if (worksheet) {
-      setWorksheet(undefined);
-      return;
-    }
-
-    chrome.storage.local.get('records', items => {
-      const records = ((items.records || []) as TimeRecord[]).map(r => ({ ...r, time: new Date(r.time) }));
-      records.sort((a, b) => +b.time - +a.time);
-      const start = startOfMonth();
-      const end = endOfMonth();
-      const result: [string, number][] = [];
-      while (+start < +end) {
-        const dateStr = start.toDateString();
-        result.push([dateStr, Math.round(getTotalSeconds(records.filter(r => r.time.toDateString() === dateStr)) / 360) / 10]);
-        start.setDate(start.getDate() + 1);
-      }
-      setWorksheet(result);
-    });
-  };
-
   return (
     <div className="popup">
-      {!worksheet && (
-        <div className="state">
-          <List state={state} seconds={seconds} />
-          <Buttons state={state} setState={setState} toggleWorksheet={toggleWorksheet} />
-        </div>
-      )}
-      {worksheet && (
-        <table>
-          <thead>
-            <tr>
-              <th>Day</th>
-              <th>Hours</th>
-            </tr>
-          </thead>
-          <tbody>
-            {worksheet.map(w => (
-              <tr key={w[0]}>
-                <td>{w[0]}</td>
-                <td>{w[1]}</td>
-              </tr>
-            ))}
-          </tbody>
-          <tfoot>
-            <tr>
-              <td></td>
-              <td>{worksheet.reduce((acc, cur) => acc + cur[1], 0)}</td>
-            </tr>
-          </tfoot>
-        </table>
-      )}
+      <div className="state">
+        <List state={state} seconds={seconds} />
+        <Buttons state={state} setState={setState} openWorksheet={() => setIsWorksheetOpen(true)} />
+      </div>
+      <Worksheet isOpen={isWorksheetOpen} onClose={() => setIsWorksheetOpen(false)} />
     </div>
   );
 };
@@ -147,10 +92,10 @@ const List = ({ state, seconds }: ListProps) => {
 type ButtonsProps = {
   state: STATE;
   setState(state: STATE): void;
-  toggleWorksheet(): void;
+  openWorksheet(): void;
 };
 
-const Buttons = ({ state, setState, toggleWorksheet }: ButtonsProps) => {
+const Buttons = ({ state, setState, openWorksheet }: ButtonsProps) => {
   // const changeBackground = () => {
   //   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
   //     const tab = tabs[0];
@@ -168,9 +113,9 @@ const Buttons = ({ state, setState, toggleWorksheet }: ButtonsProps) => {
   //   });
   // };
 
-  const buttonText = state === STATE.ONLINE ? 'logout' : 'login';
-  const action = { [STATE.ONLINE]: ACTION.LOGOUT, [STATE.OFFLINE]: ACTION.LOGIN }[state];
-  const nextState = { [STATE.ONLINE]: STATE.OFFLINE, [STATE.OFFLINE]: STATE.OFFLINE }[state];
+  const buttonText = (state === STATE.ONLINE && 'logout') || 'login';
+  const action = (state === STATE.ONLINE && ACTION.LOGOUT) || ACTION.LOGIN;
+  const nextState = (state === STATE.ONLINE && STATE.OFFLINE) || STATE.ONLINE;
 
   const runAction = () =>
     chrome.storage.local.get('records', items => {
@@ -180,15 +125,106 @@ const Buttons = ({ state, setState, toggleWorksheet }: ButtonsProps) => {
       setState(nextState);
     });
 
+  const openOptionsPage = () => chrome.runtime.openOptionsPage();
+
   return (
     <div className="buttons">
       <button onClick={runAction}>{buttonText}</button>
-      <button onClick={toggleWorksheet}>worksheet</button>
+      <button onClick={openWorksheet}>worksheet</button>
       {/* <button onClick={changeBackground}>change background</button> */}
-      <button onClick={toggleWorksheet}>options</button>
+      <button onClick={openOptionsPage}>options</button>
     </div>
   );
 };
+
+type WorksheetData = Array<{ date: string; time: string; hours: number }>;
+
+type WorksheetProps = {
+  isOpen: boolean;
+  onClose(): void;
+};
+
+const Worksheet = ({ isOpen, onClose }: WorksheetProps) => {
+  const modal = useRef<HTMLDialogElement>(null);
+  const [worksheet, setWorksheet] = useState<WorksheetData>([]);
+
+  useEffect(() => {
+    if (isOpen) {
+      chrome.storage.local.get('records', items => {
+        const records = ((items.records || []) as TimeRecord[]).map(r => ({ ...r, time: new Date(r.time) }));
+        records.sort((a, b) => +b.time - +a.time);
+        const start = startOfMonth();
+        const end = endOfMonth();
+        const result: WorksheetData = [];
+        while (+start < +end) {
+          const filtered = records.filter(r => formatDate(r.time) === formatDate(start));
+          result.push({
+            date: formatDate(start),
+            time: getTimeIntervals(filtered),
+            hours: Math.round(getTotalSeconds(filtered) / 360) / 10,
+          });
+          start.setDate(start.getDate() + 1);
+        }
+        setWorksheet(result);
+        modal.current?.showModal();
+      });
+    } else {
+      modal.current?.close();
+    }
+  }, [isOpen]);
+
+  const onClick = useCallback((event: MouseEvent<HTMLDialogElement>) => {
+    if (modal.current) {
+      const modalRect = modal.current.getBoundingClientRect();
+
+      if (
+        event.clientX < modalRect.left ||
+        event.clientX > modalRect.right ||
+        event.clientY < modalRect.top ||
+        event.clientY > modalRect.bottom
+      ) {
+        modal.current.close();
+      }
+    }
+  }, []);
+
+  return (
+    <dialog id="modal" ref={modal} onClick={onClick} onClose={onClose}>
+      <table className="zig-zag">
+        <thead>
+          <tr>
+            <th>Day</th>
+            <th>Time</th>
+            <th>Hours</th>
+          </tr>
+        </thead>
+        <tbody>
+          {worksheet.map(w => (
+            <tr key={w.date}>
+              <td>{w.date}</td>
+              <td>{w.time}</td>
+              <td>{w.hours}</td>
+            </tr>
+          ))}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colSpan={2}></td>
+            <th>{worksheet.reduce((acc, { hours }) => acc + hours, 0)}</th>
+          </tr>
+        </tfoot>
+      </table>
+    </dialog>
+  );
+};
+
+function formatDate(date: Date) {
+  return [date.getDate(), date.getMonth() + 1, date.getFullYear()].map(n => String(n).padStart(2, '0')).join('.');
+}
+
+function formatTime(date: Date) {
+  return [date.getHours(), date.getMinutes()].map(n => String(n).padStart(2, '0')).join(':');
+}
 
 function secondsToString(seconds: number) {
   var hours = Math.floor(seconds / 3600);
@@ -197,7 +233,27 @@ function secondsToString(seconds: number) {
   return [hours && `${hours} hours`, (hours || minutes) && `${minutes} minutes`, seconds + ' seconds'].filter(Boolean).join(' ');
 }
 
-function getTotalSeconds(records: { action: ACTION; time: Date }[]) {
+type Filtered = { action: ACTION; time: Date };
+
+function getTimeIntervals(records: Filtered[]) {
+  const sorted = [...records].sort((a, b) => +a.time - +b.time);
+  const time: string[] = [];
+  let lastLogin: Date | undefined;
+  sorted.forEach(record => {
+    if (record.action === ACTION.LOGIN) {
+      lastLogin = record.time;
+    } else if (lastLogin) {
+      time.push([formatTime(lastLogin), formatTime(record.time)].join('-'));
+      lastLogin = undefined;
+    }
+  });
+  if (lastLogin) {
+    time.push([formatTime(lastLogin), ''].join('-'));
+  }
+  return time.join(', ');
+}
+
+function getTotalSeconds(records: Filtered[]) {
   const sorted = [...records].sort((a, b) => +a.time - +b.time);
   let totalSeconds = 0;
   let lastLogin: Date | undefined;
