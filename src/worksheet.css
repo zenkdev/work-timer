@@ -1,0 +1,46 @@
+.worksheet_header {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 20px;
+}
+
+table.zig-zag {
+  width: 100%;
+  thead {
+    background: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+  th,
+  td {
+    padding: 0.25em 0.5em;
+    text-align: left;
+    &:nth-child(3) {
+      text-align: right;
+    }
+  }
+  td {
+    background-color: #eee;
+  }
+  th {
+    background-color: #009;
+    color: #fff;
+  }
+  border-collapse: separate;
+  border-spacing: 0.25em 1em;
+  tbody tr:nth-child(odd) {
+    transform: rotate(2deg);
+  }
+  thead tr,
+  tbody tr:nth-child(even) {
+    transform: rotate(-2deg);
+  }
+  tfoot td {
+    background: 0 none;
+  }
+  tfoot th {
+    text-align: right;
+  }
+}

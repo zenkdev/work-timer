@@ -1,14 +1,16 @@
+import './options.css';
+
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { csv2json, json2csv } from 'json-2-csv';
 
 import { ACTION, TimeRecord } from './types';
+import { Worksheet } from './worksheet';
 
 const Options = () => {
   const [color, setColor] = useState<string>('');
   const [status, setStatus] = useState<string>('');
   const [like, setLike] = useState<boolean>(false);
-  const [records, setRecords] = useState<any>();
 
   useEffect(() => {
     // Restores select box and checkbox state using the preferences
@@ -57,7 +59,6 @@ const Options = () => {
           return { action: record.action as ACTION, time: record.time };
         });
         chrome.storage.local.set({ records: r });
-        setRecords(r);
       } catch (error) {
         console.error('Invalid file.', error);
       }
@@ -76,30 +77,35 @@ const Options = () => {
     });
 
   return (
-    <>
-      <div>
-        Favorite color:{' '}
-        <select value={color} onChange={event => setColor(event.target.value)}>
-          <option value="red">red</option>
-          <option value="green">green</option>
-          <option value="blue">blue</option>
-          <option value="yellow">yellow</option>
-        </select>
+    <div className="container">
+      <div className="hidden">
+        <div>
+          Favorite color:{' '}
+          <select value={color} onChange={event => setColor(event.target.value)}>
+            <option value="red">red</option>
+            <option value="green">green</option>
+            <option value="blue">blue</option>
+            <option value="yellow">yellow</option>
+          </select>
+        </div>
+        <div>
+          <label>
+            <input type="checkbox" checked={like} onChange={event => setLike(event.target.checked)} />I like colors.
+          </label>
+        </div>
+        <div>{status}</div>
+        <button onClick={saveOptions}>Save</button>
       </div>
-      <div>
-        <label>
-          <input type="checkbox" checked={like} onChange={event => setLike(event.target.checked)} />I like colors.
+      <div className="buttons">
+        <label className="button">
+          Import logs
+          <input type="file" onChange={importLogs} className="visally-hidden" />
         </label>
+        <button onClick={exportLogs}>Export logs</button>
       </div>
-      <div>{status}</div>
-      <button onClick={saveOptions}>Save</button>
-      {records && JSON.stringify(records)}
-      <label>
-        Import logs
-        <input type="file" onChange={importLogs} />
-      </label>
-      <button onClick={exportLogs}>Export logs</button>
-    </>
+      <hr />
+      <Worksheet />
+    </div>
   );
 };
 

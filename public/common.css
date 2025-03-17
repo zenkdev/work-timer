@@ -13,20 +13,10 @@ body {
   margin: 0;
   font-size: 14px;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
-  background-color: var(--bg-color);
-  color: var(--primary-color);
 }
 
-body:has(dialog[open]) {
-  overflow: hidden;
-}
-
-dialog {
-  padding: 0;
-  border: none;
-}
-
-button {
+button,
+.button {
   border: none;
   outline: none;
   color: var(--primary-color);

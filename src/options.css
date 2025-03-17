@@ -1,0 +1,26 @@
+body.options {
+  padding: 10px;
+  width: 600px;
+  height: 500px;
+}
+
+.hidden {
+  display: none;
+}
+
+.visally-hidden {
+  visibility: hidden;
+  transform: scale(0);
+  width: 0;
+  height: 0;
+  font-size: 0;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+  gap: 20px;
+  padding: 10px;
+}
