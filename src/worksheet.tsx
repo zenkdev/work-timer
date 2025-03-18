@@ -1,14 +1,17 @@
 import './worksheet.css';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { ChangeEvent, useEffect, useMemo, useState } from 'react';
+import dayjs, { Dayjs } from 'dayjs';
 
 import { ConvertedTimeRecord, TimeRecord } from './types';
-import { endOfMonth, formatDate, getTimeIntervals, getTotalSeconds, startOfMonth } from './lib';
+import { getTimeIntervals, getTotalSeconds } from './lib';
 
-type WorksheetData = Array<{ date: string; time: string; hours: number }>;
+const DATE_FORMAT = 'DD.MM.YYYY';
+
+type WorksheetData = Array<{ date: string; dow: string; time: string; hours: number }>;
 
 export const Worksheet = () => {
-  const [start, setStart] = useState(startOfMonth());
+  const [start, setStart] = useState(() => dayjs().startOf('month'));
   const [records, setRecords] = useState<ConvertedTimeRecord[]>([]);
   const [worksheet, setWorksheet] = useState<WorksheetData>([]);
 
@@ -17,31 +20,43 @@ export const Worksheet = () => {
       const result = ((items.records || []) as TimeRecord[]).map(r => ({ ...r, time: new Date(r.time) }));
       result.sort((a, b) => +b.time - +a.time);
       setRecords(result);
+      setStart(dayjs(result[0].time).startOf('month'));
     });
   }, []);
 
   useEffect(() => {
-    const end = endOfMonth(start);
+    let begin = dayjs(start);
+    const end = dayjs(begin).endOf('month');
     const result: WorksheetData = [];
-    while (+start < +end) {
-      const filtered = records.filter(r => formatDate(r.time) === formatDate(start));
+    while (+begin < +end) {
+      const filtered = records.filter(r => dayjs(r.time).format(DATE_FORMAT) === begin.format(DATE_FORMAT));
       result.push({
-        date: formatDate(start),
+        date: begin.format(DATE_FORMAT),
+        dow: begin.format('ddd'),
         time: getTimeIntervals(filtered),
         hours: Math.round(getTotalSeconds(filtered) / 360) / 10,
       });
-      start.setDate(start.getDate() + 1);
+      begin = begin.add(1, 'day');
     }
     setWorksheet(result);
-  }, [records]);
+  }, [start, records]);
 
   const options = useMemo(() => {
     const result = new Set<string>();
     records.forEach(record => {
-      result.add(`${months[record.time.getMonth()]}, ${record.time.getFullYear()}`);
+      result.add(dateToOption(dayjs(record.time)));
     });
     return [...result.values()];
-  }, [start, records]);
+  }, [records]);
+
+  const onChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
+    const [month, year] = value.split(', ');
+    const monthIndex = months.indexOf(month);
+    const yearNumber = parseInt(year);
+    const nextStart = dayjs(new Date(yearNumber, monthIndex, 1));
+    setStart(nextStart);
+  };
 
   const totalHours = Math.round(worksheet.reduce((acc, { hours }) => acc + hours, 0) * 10) / 10;
 
@@ -49,7 +64,7 @@ export const Worksheet = () => {
     <>
       <div className="worksheet_header">
         <h3>Worksheet</h3>
-        <select name="select" value={`${months[start.getMonth()]}, ${start.getFullYear()}`}>
+        <select name="select" value={dateToOption(start)} onChange={onChange}>
           {options.map(option => (
             <option key={option} value={option}>
               {option}
@@ -60,7 +75,7 @@ export const Worksheet = () => {
       <table className="zig-zag">
         <thead>
           <tr>
-            <th>Day</th>
+            <th colSpan={2}>Day</th>
             <th>Time</th>
             <th>Hours</th>
           </tr>
@@ -69,14 +84,15 @@ export const Worksheet = () => {
           {worksheet.map(w => (
             <tr key={w.date}>
               <td>{w.date}</td>
+              <td>{w.dow}</td>
               <td>{w.time}</td>
-              <td>{w.hours}</td>
+              <td className="right">{(['Sat', 'Sun'].includes(w.dow) && !w.hours && '') || w.hours}</td>
             </tr>
           ))}
         </tbody>
         <tfoot>
           <tr>
-            <td colSpan={2}></td>
+            <td colSpan={3}></td>
             <th>{totalHours}</th>
           </tr>
         </tfoot>
@@ -86,3 +102,5 @@ export const Worksheet = () => {
 };
 
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+const dateToOption = (date: Dayjs) => `${months[date.get('month')]}, ${date.get('year')}`;

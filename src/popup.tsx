@@ -1,11 +1,12 @@
 import './popup.css';
 
+import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import { ACTION, TimeRecord } from './types';
 import { Counter } from './counter';
-import { getTotalSeconds, secondsToString, startOfDay } from './lib';
+import { getTotalSeconds, secondsToString } from './lib';
 
 const Popup = () => {
   const [online, setOnline] = useState(false);
@@ -34,7 +35,7 @@ const Popup = () => {
       const records = ((items.records || []) as TimeRecord[]).map(r => ({ ...r, time: new Date(r.time) }));
       records.sort((a, b) => +b.time - +a.time);
       setOnline(records[0]?.action === ACTION.LOGIN);
-      const todayStart = +startOfDay();
+      const todayStart = +dayjs().startOf('day');
       setSeconds(getTotalSeconds(records.filter(r => +r.time >= todayStart)));
     });
   }, []);

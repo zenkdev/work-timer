@@ -17,7 +17,8 @@ table.zig-zag {
   td {
     padding: 0.25em 0.5em;
     text-align: left;
-    &:nth-child(3) {
+    text-wrap: pretty;
+    &.right {
       text-align: right;
     }
   }
