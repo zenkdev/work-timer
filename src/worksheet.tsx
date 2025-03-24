@@ -1,28 +1,51 @@
 import './worksheet.css';
 
-import React, { ChangeEvent, useEffect, useMemo, useState } from 'react';
+import React, { ChangeEvent, MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 
-import { ConvertedTimeRecord, TimeRecord } from './types';
-import { getTimeIntervals, getTotalSeconds } from './lib';
+import { ACTION, ConvertedTimeRecord, TimeRecord } from './types';
+import { getRecordsFromStorage, getTimeIntervals, getTotalSeconds } from './lib';
 
 const DATE_FORMAT = 'DD.MM.YYYY';
 
 type WorksheetData = Array<{ date: string; dow: string; time: string; hours: number }>;
 
 export const Worksheet = () => {
+  const [counter, setCounter] = useState(0);
   const [start, setStart] = useState(() => dayjs().startOf('month'));
   const [records, setRecords] = useState<ConvertedTimeRecord[]>([]);
   const [worksheet, setWorksheet] = useState<WorksheetData>([]);
 
+  const modal = useRef<HTMLDialogElement>(null);
+  const [date, setDate] = useState('');
+  const [action, setAction] = useState(ACTION.LOGIN);
+  const [time, setTime] = useState('');
+
   useEffect(() => {
-    chrome.storage.local.get('records', items => {
-      const result = ((items.records || []) as TimeRecord[]).map(r => ({ ...r, time: new Date(r.time) }));
-      result.sort((a, b) => +b.time - +a.time);
+    const listener = (changes: { [key: string]: chrome.storage.StorageChange }, areaName: string) => {
+      if (areaName === 'local' && Object.keys(changes).includes('records')) {
+        setCounter(prev => prev + 1);
+      }
+    };
+    chrome.storage.onChanged.addListener(listener);
+    return () => {
+      chrome.storage.onChanged.removeListener(listener);
+    };
+  }, []);
+
+  useEffect(() => {
+    let actual = true;
+    (async () => {
+      const result = await getRecordsFromStorage({ sort: 'desc' });
+      if (!actual) return;
       setRecords(result);
       setStart(dayjs(result[0].time).startOf('month'));
-    });
-  }, []);
+    })();
+
+    return () => {
+      actual = false;
+    };
+  }, [counter]);
 
   useEffect(() => {
     let begin = dayjs(start);
@@ -58,6 +81,50 @@ export const Worksheet = () => {
     setStart(nextStart);
   };
 
+  const onModalOpen = useCallback((value: string) => {
+    setDate(value);
+    modal.current?.showModal();
+  }, []);
+
+  const onModalClose = useCallback(() => {
+    setDate('');
+    modal.current?.close();
+  }, []);
+
+  const onModalClick = useCallback(
+    (event: MouseEvent<HTMLDialogElement>) => {
+      if (modal.current) {
+        const modalRect = modal.current.getBoundingClientRect();
+
+        if (
+          event.clientX < modalRect.left ||
+          event.clientX > modalRect.right ||
+          event.clientY < modalRect.top ||
+          event.clientY > modalRect.bottom
+        ) {
+          onModalClose();
+        }
+      }
+    },
+    [onModalClose],
+  );
+
+  const onSubmit = () => {
+    const [day, month, year] = date.split('.');
+    const [hour, minute] = time.split(':');
+    chrome.storage.local.get('records', items => {
+      const result = (items.records || []) as TimeRecord[];
+      result.push({
+        time: new Date(+year, +month - 1, +day, +hour, +minute, 0, 0).toISOString(),
+        action,
+      });
+      result.sort((a, b) => +dayjs(a.time) - +dayjs(b.time));
+      chrome.storage.local.set({ records: result });
+      modal.current?.close();
+      setCounter(p => p + 1);
+    });
+  };
+
   const totalHours = Math.round(worksheet.reduce((acc, { hours }) => acc + hours, 0) * 10) / 10;
 
   return (
@@ -85,8 +152,13 @@ export const Worksheet = () => {
             <tr key={w.date}>
               <td>{w.date}</td>
               <td>{w.dow}</td>
-              <td>{w.time}</td>
-              <td className="right">{(['Sat', 'Sun'].includes(w.dow) && !w.hours && '') || w.hours}</td>
+              <td className="action">
+                {w.time}
+                <span role="button" onClick={() => onModalOpen(w.date)}>
+                  +
+                </span>
+              </td>
+              <td className="right">{['Sat', 'Sun'].includes(w.dow) && !w.hours ? '' : w.hours}</td>
             </tr>
           ))}
         </tbody>
@@ -97,6 +169,33 @@ export const Worksheet = () => {
           </tr>
         </tfoot>
       </table>
+      <dialog ref={modal} className="add_modal" onClick={onModalClick} onClose={onModalClose}>
+        <h2>Add work time</h2>
+        <ul>
+          <li>
+            <b>Date:</b> {date}
+          </li>
+          <li>
+            <label>
+              <b>Action:</b>{' '}
+              <select value={action} onChange={event => setAction(event.target.value as ACTION)}>
+                <option value={ACTION.LOGIN}>Login</option>
+                <option value={ACTION.LOGOUT}>Logout</option>
+              </select>
+            </label>
+          </li>
+          <li>
+            <label>
+              <b>Time:</b> <input type="time" lang="ru" value={time} onChange={event => setTime(event.target.value)} />
+            </label>
+          </li>
+          <li style={{ textAlign: 'right' }}>
+            <button className="button" onClick={onSubmit}>
+              Submit
+            </button>
+          </li>
+        </ul>
+      </dialog>
     </>
   );
 };

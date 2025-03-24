@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 
-import { ACTION, ConvertedTimeRecord } from './types';
+import { ACTION, ConvertedTimeRecord, TimeRecord } from './types';
 
 const TIME_FORMAT = 'HH:mm';
 
@@ -45,4 +45,19 @@ export function getTotalSeconds(records: ConvertedTimeRecord[]) {
     totalSeconds += Math.round(Math.min(+dayjs(lastLogin).endOf('day'), Date.now()) / 1000) - Math.round(+lastLogin / 1000);
   }
   return totalSeconds;
+}
+
+export async function getRecordsFromStorage({ sort }: { sort?: 'asc' | 'desc' } = {}) {
+  const items = await chrome.storage.local.get('records');
+  const records = ((items.records || []) as TimeRecord[]).map(r => ({ ...r, time: new Date(r.time) }));
+  if (sort === 'desc') records.sort((a, b) => +b.time - +a.time);
+  else if (sort === 'asc') records.sort((a, b) => +a.time - +b.time);
+  return records;
+}
+
+export async function addTimeRecord(value: TimeRecord) {
+  const items = await chrome.storage.local.get('records');
+  const records = (items.records as TimeRecord[]) || [];
+  records.push(value);
+  chrome.storage.local.set({ records });
 }

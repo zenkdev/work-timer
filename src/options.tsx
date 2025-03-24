@@ -101,7 +101,9 @@ const Options = () => {
           Import logs
           <input type="file" onChange={importLogs} className="visally-hidden" />
         </label>
-        <button onClick={exportLogs}>Export logs</button>
+        <button className="button" onClick={exportLogs}>
+          Export logs
+        </button>
       </div>
       <hr />
       <Worksheet />

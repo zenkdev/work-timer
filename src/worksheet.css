@@ -45,3 +45,31 @@ table.zig-zag {
     text-align: right;
   }
 }
+
+.action {
+  span[role='button'] {
+    margin-left: 5px;
+    visibility: hidden;
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--link-color);
+  }
+}
+
+.action:hover span[role='button'] {
+  visibility: visible;
+}
+
+.add_modal {
+  width: 300px;
+  padding: 1em 2em 2em 2em;
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+  }
+}
