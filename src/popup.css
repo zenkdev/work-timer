@@ -1,6 +1,6 @@
 body.popup {
-  background-color: var(--bg-color);
-  color: var(--primary-color);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 .container {
@@ -33,11 +33,11 @@ ul.state {
 }
 
 .online {
-  color: var(--success-color);
+  color: var(--text-success);
   font-weight: 600;
 }
 
 .offline {
-  color: var(--error-color);
+  color: var(--text-error);
   font-weight: 600;
 }

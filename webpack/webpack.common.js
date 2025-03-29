@@ -94,6 +94,10 @@ module.exports = {
           },
         },
       },
+      {
+        test: /\.png$/,
+        type: 'asset',
+      },
     ],
   },
   resolve: {

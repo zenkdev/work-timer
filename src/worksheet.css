@@ -8,7 +8,7 @@
 table.zig-zag {
   width: 100%;
   thead {
-    background: #fff;
+    background: var(--bg-white);
     position: sticky;
     top: 0;
     z-index: 1;
@@ -26,8 +26,8 @@ table.zig-zag {
     background-color: #eee;
   }
   th {
-    background-color: #009;
-    color: #fff;
+    background-color: var(--bg-accent);
+    color: var(--text-primary);
   }
   border-collapse: separate;
   border-spacing: 0.25em 1em;
@@ -52,7 +52,7 @@ table.zig-zag {
     visibility: hidden;
     cursor: pointer;
     font-weight: 700;
-    color: var(--link-color);
+    color: var(--text-accent);
   }
 }
 
@@ -62,7 +62,6 @@ table.zig-zag {
 
 .add_modal {
   width: 300px;
-  padding: 1em 2em 2em 2em;
 
   ul {
     margin: 0;

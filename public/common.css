@@ -1,17 +1,15 @@
 :root {
-  --bg-color: #1b1c1f;
-  --primary-color: #ffffff;
-  --transparent-color: rgba(255, 255, 255, 0.25);
-  --success-color: #008148;
-  --error-color: #d6261e;
-  --digit-height: 60px;
-  --button-bg-color: #0a0a0b;
-  --button-bg-disabled-color: #8b8b8b;
-  --arrow-bg: rgba(255, 255, 255, 0.3);
-  --arrow-icon: url(https://upload.wikimedia.org/wikipedia/commons/9/9d/Caret_down_font_awesome_whitevariation.svg);
-  --option-bg: #1b1c1f;
-  --select-bg: rgba(255, 255, 255, 0.2);
-  --link-color: #2f67f9;
+  --bg-primary: #1b1c1f;
+  --bg-secondary: #dfdfdf;
+  --bg-accent: #2b61ec;
+  --bg-button: #0a0a0b;
+  --bg-button-disabled: #8b8b8b;
+  --bg-white: #ffffff;
+  --bg-transparent: rgba(255, 255, 255, 0.3);
+  --text-primary: #ffffff;
+  --text-accent: #2f67f9;
+  --text-success: #008148;
+  --text-error: #d6261e;
 }
 
 *,
@@ -39,9 +37,9 @@ select {
   /* Personalize */
   padding: 0.5rem 3rem 0.5rem 0.5rem;
   background:
-    var(--arrow-icon) no-repeat right 0.8em center / 1.4em,
-    linear-gradient(to left, var(--arrow-bg) 3em, var(--select-bg) 3em),
-    linear-gradient(35deg, red, purple);
+    url('carret-down.svg') no-repeat right 0.8em center / 1.4em,
+    linear-gradient(to left, rgba(255, 255, 255, 0.4) 3em, rgba(255, 255, 255, 0.2) 3em),
+    var(--bg-accent);
   color: white;
   border-radius: 0.25em;
   box-shadow: 0 0 1em 0 rgba(0, 0, 0, 0.2);
@@ -57,27 +55,52 @@ select {
   /* <option> colors */
   option {
     color: inherit;
-    background-color: var(--option-bg);
+    background-color: var(--bg-primary);
   }
 }
 
 dialog {
-  padding: 0;
-  border: none;
+  padding: 1rem 3rem;
+  background: white;
+  max-width: 400px;
+  padding-top: 2rem;
+  border-radius: 20px;
+  border: 0;
+  box-shadow: 0 5px 30px 0 rgb(0 0 0 / 10%);
+  animation: zoomIn 0.5s ease both;
+  &::backdrop {
+    animation: fadeIn 1s ease both;
+    background: rgb(255 255 255 / 40%);
+    z-index: 2;
+    backdrop-filter: blur(20px);
+  }
+}
 
-  ::backdrop {
-    background-image: linear-gradient(45deg, magenta, rebeccapurple, dodgerblue, green);
-    opacity: 0.75;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
   }
 }
 
 .button {
   border: none;
   outline: none;
-  color: var(--primary-color);
+  color: var(--text-primary);
   text-transform: uppercase;
   white-space: nowrap;
-  background: var(--button-bg-color);
+  background: var(--bg-button);
   cursor: pointer;
   position: relative;
   z-index: 0;
@@ -86,12 +109,12 @@ dialog {
 
   &:disabled {
     cursor: not-allowed;
-    background: var(--button-bg-disabled-color);
+    background: var(--bg-button-disabled);
     &:before {
       content: none;
     }
     &::after {
-      background: var(--button-bg-disabled-color);
+      background: var(--bg-button-disabled);
     }
   }
 
@@ -113,7 +136,7 @@ dialog {
   }
 
   &:active {
-    color: var(--button-bg-color);
+    color: var(--bg-button);
   }
 
   &:active:after {
@@ -130,7 +153,7 @@ dialog {
     position: absolute;
     width: 100%;
     height: 100%;
-    background: var(--button-bg-color);
+    background: var(--bg-button);
     left: 0;
     top: 0;
     border-radius: 10px;
