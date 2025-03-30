@@ -1,5 +1,6 @@
 import { RsdoctorRspackPlugin } from '@rsdoctor/rspack-plugin';
 import { defineConfig } from '@rspack/cli';
+import { join } from 'path';
 import { rspack } from '@rspack/core';
 
 const isDev = process.env.NODE_ENV === 'development';
@@ -16,7 +17,7 @@ export default defineConfig({
     content_script: './src/content_script.tsx',
   },
   output: {
-    path: './dist/js',
+    path: join(__dirname, '../dist/js'),
     filename: '[name].js',
   },
   resolve: {
