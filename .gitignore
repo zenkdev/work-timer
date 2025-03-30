@@ -1,4 +1,16 @@
-npm-debug.log
-node_modules/
+# Local
+.DS_Store
+*.local
+*.log*
+
+# Dist
+node_modules
 dist/
-tmp/
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+.idea
+
+# eslint
+.eslintcache

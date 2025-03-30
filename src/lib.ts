@@ -4,10 +4,10 @@ import { ACTION, ConvertedTimeRecord, TimeRecord } from './types';
 
 const TIME_FORMAT = 'HH:mm';
 
-export function secondsToString(seconds: number) {
-  var hours = Math.floor(seconds / 3600);
-  var minutes = Math.floor((seconds % 3600) / 60);
-  var seconds = seconds % 60;
+export function secondsToString(value: number) {
+  const hours = Math.floor(value / 3600);
+  const minutes = Math.floor((value % 3600) / 60);
+  const seconds = value % 60;
   return [hours && `${hours} hours`, (hours || minutes) && `${minutes} minutes`, seconds + ' seconds'].filter(Boolean).join(' ');
 }
 

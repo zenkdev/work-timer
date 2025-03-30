@@ -8,9 +8,9 @@ import { getRecordsFromStorage, getTimeIntervals, getTotalSeconds } from './lib'
 
 const DATE_FORMAT = 'DD.MM.YYYY';
 
-type WorksheetData = Array<{ date: string; dow: string; time: string; hours: number }>;
+type WorksheetData = { date: string; dow: string; time: string; hours: number }[];
 
-export const Worksheet = () => {
+export function Worksheet() {
   const [counter, setCounter] = useState(0);
   const [start, setStart] = useState(() => dayjs().startOf('month'));
   const [records, setRecords] = useState<ConvertedTimeRecord[]>([]);
@@ -22,7 +22,7 @@ export const Worksheet = () => {
   const [time, setTime] = useState('');
 
   useEffect(() => {
-    const listener = (changes: { [key: string]: chrome.storage.StorageChange }, areaName: string) => {
+    const listener = (changes: Record<string, chrome.storage.StorageChange>, areaName: string) => {
       if (areaName === 'local' && Object.keys(changes).includes('records')) {
         setCounter(prev => prev + 1);
       }
@@ -198,7 +198,7 @@ export const Worksheet = () => {
       </dialog>
     </>
   );
-};
+}
 
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 

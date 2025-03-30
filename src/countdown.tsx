@@ -2,7 +2,7 @@ import './countdown.css';
 
 import React from 'react';
 
-export const Countdown = () => {
+export function Countdown() {
   return (
     <div className="wrapper">
       <div className="time-part-wrapper">
@@ -95,4 +95,4 @@ export const Countdown = () => {
       </div>
     </div>
   );
-};
+}

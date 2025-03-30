@@ -7,7 +7,7 @@ import { csv2json, json2csv } from 'json-2-csv';
 import { ACTION, TimeRecord } from './types';
 import { Worksheet } from './worksheet';
 
-const Options = () => {
+function Options() {
   const [color, setColor] = useState<string>('');
   const [status, setStatus] = useState<string>('');
   const [like, setLike] = useState<boolean>(false);
@@ -55,7 +55,7 @@ const Options = () => {
           if (record.action !== 'login' && record.action !== 'logout') {
             throw new Error('Invalid action');
           }
-          const d = new Date(record.time);
+          new Date(record.time);
           return { action: record.action as ACTION, time: record.time };
         });
         chrome.storage.local.set({ records: r });
@@ -109,7 +109,7 @@ const Options = () => {
       <Worksheet />
     </div>
   );
-};
+}
 
 const download = (data: string) => {
   // Create a Blob with the CSV data and type

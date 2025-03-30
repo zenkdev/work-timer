@@ -3,12 +3,12 @@ export enum ACTION {
   LOGOUT = 'logout',
 }
 
-export type TimeRecord = {
+export interface TimeRecord {
   action: ACTION;
   time: string;
-};
+}
 
-export type ConvertedTimeRecord = {
+export interface ConvertedTimeRecord {
   action: ACTION;
   time: Date;
-};
+}

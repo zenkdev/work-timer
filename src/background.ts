@@ -1,7 +1,5 @@
-/* import-sort-ignore */
 import dayjs from 'dayjs';
 
-// @ts-expect-error no type
 import iconUrl from './assets/icon.png';
 import { ACTION } from './types';
 import { getRecordsFromStorage } from './lib';
@@ -27,7 +25,9 @@ chrome.alarms.onAlarm.addListener(async ({ name }) => {
           iconUrl,
           requireInteraction: true,
         },
-        function () {},
+        function () {
+          // empty
+        },
       );
     }
   }

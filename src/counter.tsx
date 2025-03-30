@@ -2,11 +2,11 @@ import './counter.css';
 
 import React, { useEffect, useState } from 'react';
 
-type CounterProps = {
+interface CounterProps {
   seconds: number;
-};
+}
 
-export const Counter = ({ seconds }: CounterProps) => {
+export function Counter({ seconds }: CounterProps) {
   const [digit1, setDigit1] = useState(0);
   const [digit2, setDigit2] = useState(0);
   const [digit3, setDigit3] = useState(0);
@@ -68,4 +68,4 @@ export const Counter = ({ seconds }: CounterProps) => {
       </div>
     </div>
   );
-};
+}

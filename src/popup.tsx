@@ -8,7 +8,7 @@ import { ACTION } from './types';
 import { Counter } from './counter';
 import { addTimeRecord, getRecordsFromStorage, getTotalSeconds, secondsToString } from './lib';
 
-const Popup = () => {
+function Popup() {
   const [online, setOnline] = useState(false);
   const [seconds, setSeconds] = useState(0);
 
@@ -95,7 +95,7 @@ const Popup = () => {
       </div>
     </div>
   );
-};
+}
 
 const root = createRoot(document.getElementById('root')!);
 
