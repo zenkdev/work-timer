@@ -17,7 +17,7 @@ export default defineConfig({
     content_script: './src/content_script.tsx',
   },
   output: {
-    path: join(__dirname, '../dist/js'),
+    path: join(__dirname, './dist/js'),
     filename: '[name].js',
   },
   resolve: {

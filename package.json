@@ -11,7 +11,7 @@
     "test": "npx jest",
     "format": "prettier --write .",
     "lint": "eslint .",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "author": "",
   "license": "MIT",
