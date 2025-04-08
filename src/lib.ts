@@ -8,7 +8,13 @@ export function secondsToString(value: number) {
   const hours = Math.floor(value / 3600);
   const minutes = Math.floor((value % 3600) / 60);
   const seconds = value % 60;
-  return [hours && `${hours} hours`, (hours || minutes) && `${minutes} minutes`, seconds + ' seconds'].filter(Boolean).join(' ');
+  return [
+    hours && `${hours} hour${hours > 1 ? 's' : ''}`,
+    (hours || minutes) && `${minutes} minute${minutes > 1 ? 's' : ''}`,
+    seconds + ` second${seconds > 1 ? 's' : ''}`,
+  ]
+    .filter(Boolean)
+    .join(' ');
 }
 
 export function getTimeIntervals(records: ConvertedTimeRecord[]) {
