@@ -1,71 +1,70 @@
 import './counter.css';
 
-import React, { useEffect, useState } from 'react';
-
 interface CounterProps {
   seconds: number;
 }
 
 export function Counter({ seconds }: CounterProps) {
-  const [digit1, setDigit1] = useState(0);
-  const [digit2, setDigit2] = useState(0);
-  const [digit3, setDigit3] = useState(0);
-  const [digit4, setDigit4] = useState(0);
-  const [digit5, setDigit5] = useState(0);
-  const [digit6, setDigit6] = useState(0);
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
 
-  useEffect(() => {
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    const s = seconds % 60;
+  const digit1 = Math.floor(h / 10);
+  const digit2 = h - digit1 * 10;
 
-    const d1 = Math.floor(h / 10);
-    setDigit1(d1);
-    setDigit2(h - d1 * 10);
+  const digit3 = Math.floor(m / 10);
+  const digit4 = m - digit3 * 10;
 
-    const d3 = Math.floor(m / 10);
-    setDigit3(d3);
-    setDigit4(m - d3 * 10);
-
-    const d5 = Math.floor(s / 10);
-    setDigit5(d5);
-    setDigit6(s - d5 * 10);
-  }, [seconds]);
+  const digit5 = Math.floor(s / 10);
+  const digit6 = s - digit5 * 10;
 
   return (
     <div id="counter">
-      <div id="counter_item1" className="counter_item">
-        <div className="front"></div>
-        <div className={`digit digit${digit1}`}></div>
+      <div className="counter_item">
+        <Digit value={digit1} />
       </div>
-      <div id="counter_item2" className="counter_item">
-        <div className="front"></div>
-        <div className={`digit digit${digit2}`}></div>
+      <div className="counter_item">
+        <Digit value={digit2} />
       </div>
-      <div id="counter_item3" className="counter_item">
-        <div className="front"></div>
-        <div className="digit digit_colon"></div>
+      <div className="counter_item">
+        <div className="digit digit_colon">:</div>
       </div>
-      <div id="counter_item4" className="counter_item">
-        <div className="front"></div>
-        <div className={`digit digit${digit3}`}></div>
+      <div className="counter_item">
+        <Digit value={digit3} />
       </div>
-      <div id="counter_item5" className="counter_item">
-        <div className="front"></div>
-        <div className={`digit digit${digit4}`}></div>
+      <div className="counter_item">
+        <Digit value={digit4} />
       </div>
-      <div id="counter_item6" className="counter_item">
-        <div className="front"></div>
-        <div className="digit digit_colon"></div>
+      <div className="counter_item">
+        <div className="digit digit_colon">:</div>
       </div>
-      <div id="counter_item7" className="counter_item">
-        <div className="front"></div>
-        <div className={`digit digit${digit5}`}></div>
+      <div className="counter_item">
+        <Digit value={digit5} />
       </div>
-      <div id="counter_item8" className="counter_item">
-        <div className="front"></div>
-        <div className={`digit digit${digit6}`}></div>
+      <div className="counter_item">
+        <Digit value={digit6} />
       </div>
+    </div>
+  );
+}
+
+interface DigitProps {
+  value: number;
+}
+
+function Digit({ value }: DigitProps) {
+  return (
+    <div className={`digit digit_${value}`}>
+      <span>0</span>
+      <span>1</span>
+      <span>2</span>
+      <span>3</span>
+      <span>4</span>
+      <span>5</span>
+      <span>6</span>
+      <span>7</span>
+      <span>8</span>
+      <span>9</span>
     </div>
   );
 }
