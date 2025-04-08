@@ -13,8 +13,7 @@ function Options() {
   const [like, setLike] = useState<boolean>(false);
 
   useEffect(() => {
-    // Restores select box and checkbox state using the preferences
-    // stored in chrome.storage.
+    // Restores select box and checkbox state using the preferences stored in chrome.storage.
     chrome.storage.sync.get(
       {
         favoriteColor: 'red',
@@ -99,7 +98,7 @@ function Options() {
       <div className="buttons">
         <label className="button">
           Import logs
-          <input type="file" onChange={importLogs} className="visally-hidden" />
+          <input type="file" onChange={importLogs} className="visually-hidden" />
         </label>
         <button className="button" onClick={exportLogs}>
           Export logs

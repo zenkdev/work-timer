@@ -44,22 +44,6 @@ function Popup() {
     };
   }, []);
 
-  // const changeBackground = () => {
-  //   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-  //     const tab = tabs[0];
-  //     if (tab.id) {
-  //       chrome.tabs.sendMessage(
-  //         tab.id,
-  //         {
-  //           color: '#555555',
-  //         },
-  //         msg => {
-  //           console.log('result message:', msg);
-  //         },
-  //       );
-  //     }
-  //   });
-  // };
   const state = (online && 'online') || 'offline';
 
   const runAction = async () => {
@@ -88,7 +72,6 @@ function Popup() {
         <button className="button" onClick={runAction}>
           {(online && 'logout') || 'login'}
         </button>
-        {/* <button onClick={changeBackground}>change background</button> */}
         <button className="button" onClick={openOptionsPage}>
           options
         </button>

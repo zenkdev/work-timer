@@ -7,14 +7,6 @@
   display: none;
 }
 
-.visally-hidden {
-  visibility: hidden;
-  transform: scale(0);
-  width: 0;
-  height: 0;
-  font-size: 0;
-}
-
 .buttons {
   display: flex;
   flex-direction: row;

@@ -131,7 +131,7 @@ export function Worksheet() {
     <>
       <div className="worksheet_header">
         <h3>Worksheet</h3>
-        <select name="select" value={dateToOption(start)} onChange={onChange}>
+        <select className="input" name="select" value={dateToOption(start)} onChange={onChange}>
           {options.map(option => (
             <option key={option} value={option}>
               {option}
@@ -169,16 +169,16 @@ export function Worksheet() {
           </tr>
         </tfoot>
       </table>
-      <dialog ref={modal} className="add_modal" onClick={onModalClick} onClose={onModalClose}>
+      <dialog ref={modal} className="dialog add_modal" onClick={onModalClick} onClose={onModalClose}>
         <h2>Add work time</h2>
-        <ul>
+        <ul className="content">
           <li>
             <b>Date:</b> {date}
           </li>
           <li>
             <label>
               <b>Action:</b>{' '}
-              <select value={action} onChange={event => setAction(event.target.value as ACTION)}>
+              <select className="input" value={action} onChange={event => setAction(event.target.value as ACTION)}>
                 <option value={ACTION.LOGIN}>Login</option>
                 <option value={ACTION.LOGOUT}>Logout</option>
               </select>
@@ -186,15 +186,18 @@ export function Worksheet() {
           </li>
           <li>
             <label>
-              <b>Time:</b> <input type="time" lang="ru" value={time} onChange={event => setTime(event.target.value)} />
+              <b>Time:</b> <input className="input" type="time" lang="ru" value={time} onChange={event => setTime(event.target.value)} />
             </label>
           </li>
-          <li style={{ textAlign: 'right' }}>
-            <button className="button" onClick={onSubmit}>
-              Submit
-            </button>
-          </li>
         </ul>
+        <div className="buttons">
+          <button className="button" onClick={onSubmit}>
+            Submit
+          </button>
+          <button className="button cancel" onClick={onModalClose}>
+            Cancel
+          </button>
+        </div>
       </dialog>
     </>
   );
