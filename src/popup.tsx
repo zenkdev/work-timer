@@ -1,4 +1,5 @@
-import './popup.css';
+import './_common.less';
+import './popup.less';
 
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';

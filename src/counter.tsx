@@ -1,4 +1,4 @@
-import './counter.css';
+import './counter.less';
 
 interface CounterProps {
   seconds: number;

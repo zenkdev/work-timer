@@ -6,7 +6,7 @@ import { rspack } from '@rspack/core';
 const isDev = process.env.NODE_ENV === 'development';
 
 // Target browsers, see: https://github.com/browserslist/browserslist
-const targets = ['Chrome >= 48'];
+const targets = ['Chrome >= 88'];
 
 export default defineConfig({
   context: __dirname,
@@ -14,7 +14,6 @@ export default defineConfig({
     popup: './src/popup.tsx',
     options: './src/options.tsx',
     background: './src/background.ts',
-    content_script: './src/content_script.tsx',
   },
   output: {
     path: join(__dirname, './dist/js'),
@@ -75,6 +74,19 @@ export default defineConfig({
             },
           },
         ],
+      },
+      {
+        test: /\.less$/,
+        use: [
+          {
+            loader: 'less-loader',
+            options: {
+              // ...
+            },
+          },
+        ],
+        // set to 'css/auto' if you want to support '*.module.less' as CSS Modules, otherwise set type to 'css'
+        type: 'css/auto',
       },
     ],
   },

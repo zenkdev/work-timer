@@ -1,9 +1,10 @@
-import './worksheet.css';
+import './worksheet.less';
 
-import React, { ChangeEvent, MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 
 import { ACTION, ConvertedTimeRecord, TimeRecord } from './types';
+import { Dialog } from './dialog';
 import { getRecordsFromStorage, getTimeIntervals, getTotalSeconds } from './lib';
 
 const DATE_FORMAT = 'DD.MM.YYYY';
@@ -16,7 +17,6 @@ export function Worksheet() {
   const [records, setRecords] = useState<ConvertedTimeRecord[]>([]);
   const [worksheet, setWorksheet] = useState<WorksheetData>([]);
 
-  const modal = useRef<HTMLDialogElement>(null);
   const [date, setDate] = useState('');
   const [action, setAction] = useState(ACTION.LOGIN);
   const [time, setTime] = useState('');
@@ -81,33 +81,17 @@ export function Worksheet() {
     setStart(nextStart);
   };
 
-  const onModalOpen = useCallback((value: string) => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const onDialogOpen = useCallback((value: string) => {
     setDate(value);
-    modal.current?.showModal();
+    setIsDialogOpen(true);
   }, []);
 
-  const onModalClose = useCallback(() => {
+  const onDialogClose = useCallback(() => {
     setDate('');
-    modal.current?.close();
+    setIsDialogOpen(false);
   }, []);
-
-  const onModalClick = useCallback(
-    (event: MouseEvent<HTMLDialogElement>) => {
-      if (modal.current) {
-        const modalRect = modal.current.getBoundingClientRect();
-
-        if (
-          event.clientX < modalRect.left ||
-          event.clientX > modalRect.right ||
-          event.clientY < modalRect.top ||
-          event.clientY > modalRect.bottom
-        ) {
-          onModalClose();
-        }
-      }
-    },
-    [onModalClose],
-  );
 
   const onSubmit = () => {
     const [day, month, year] = date.split('.');
@@ -120,7 +104,7 @@ export function Worksheet() {
       });
       result.sort((a, b) => +dayjs(a.time) - +dayjs(b.time));
       chrome.storage.local.set({ records: result });
-      modal.current?.close();
+      onDialogClose();
       setCounter(p => p + 1);
     });
   };
@@ -154,7 +138,7 @@ export function Worksheet() {
               <td>{w.dow}</td>
               <td className="action">
                 {w.time}
-                <span role="button" onClick={() => onModalOpen(w.date)}>
+                <span role="button" onClick={() => onDialogOpen(w.date)}>
                   +
                 </span>
               </td>
@@ -169,8 +153,20 @@ export function Worksheet() {
           </tr>
         </tfoot>
       </table>
-      <dialog ref={modal} className="dialog add_modal" onClick={onModalClick} onClose={onModalClose}>
-        <h2>Add work time</h2>
+      <Dialog
+        isOpen={isDialogOpen}
+        className="add_dialog"
+        onClose={onDialogClose}
+        title="Add work time"
+        buttons={[
+          <button key="submit" className="button" onClick={onSubmit}>
+            Submit
+          </button>,
+          <button key="cancel" className="button cancel" onClick={onDialogClose}>
+            Cancel
+          </button>,
+        ]}
+      >
         <ul className="content">
           <li>
             <b>Date:</b> {date}
@@ -190,15 +186,7 @@ export function Worksheet() {
             </label>
           </li>
         </ul>
-        <div className="buttons">
-          <button className="button" onClick={onSubmit}>
-            Submit
-          </button>
-          <button className="button cancel" onClick={onModalClose}>
-            Cancel
-          </button>
-        </div>
-      </dialog>
+      </Dialog>
     </>
   );
 }

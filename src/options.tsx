@@ -1,48 +1,49 @@
-import './options.css';
+import './_common.less';
+import './options.less';
 
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { csv2json, json2csv } from 'json-2-csv';
 
 import { ACTION, TimeRecord } from './types';
+import { Checkbox } from './checkbox';
+import { Dialog } from './dialog';
 import { Worksheet } from './worksheet';
 
 function Options() {
-  const [color, setColor] = useState<string>('');
-  const [status, setStatus] = useState<string>('');
-  const [like, setLike] = useState<boolean>(false);
+  const [notify, setNotify] = useState(false);
+  const [workTime, setWorkTime] = useState(45);
+  const [restTime, setRestTime] = useState(15);
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const onDialogOpen = useCallback(() => {
+    setIsDialogOpen(true);
+  }, []);
+
+  const onDialogClose = useCallback(() => {
+    chrome.storage.sync.set({ notify, workTime, restTime }, () => {
+      console.log('set', { notify, workTime, restTime });
+      setIsDialogOpen(false);
+    });
+  }, [notify, restTime, workTime]);
 
   useEffect(() => {
     // Restores select box and checkbox state using the preferences stored in chrome.storage.
     chrome.storage.sync.get(
       {
-        favoriteColor: 'red',
-        likesColor: true,
+        notify: false,
+        workTime: 45,
+        restTime: 15,
       },
       items => {
-        setColor(items.favoriteColor);
-        setLike(items.likesColor);
+        console.log('get', items);
+        setNotify(items.notify);
+        setWorkTime(items.workTime);
+        setRestTime(items.restTime);
       },
     );
   }, []);
-
-  const saveOptions = () => {
-    // Saves options to chrome.storage.sync.
-    chrome.storage.sync.set(
-      {
-        favoriteColor: color,
-        likesColor: like,
-      },
-      () => {
-        // Update status to let user know options were saved.
-        setStatus('Options saved.');
-        const id = setTimeout(() => {
-          setStatus('');
-        }, 1000);
-        return () => clearTimeout(id);
-      },
-    );
-  };
 
   const importLogs = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -77,25 +78,57 @@ function Options() {
 
   return (
     <div className="container">
-      <div className="hidden">
-        <div>
-          Favorite color:{' '}
-          <select value={color} onChange={event => setColor(event.target.value)}>
-            <option value="red">red</option>
-            <option value="green">green</option>
-            <option value="blue">blue</option>
-            <option value="yellow">yellow</option>
-          </select>
-        </div>
-        <div>
-          <label>
-            <input type="checkbox" checked={like} onChange={event => setLike(event.target.checked)} />I like colors.
-          </label>
-        </div>
-        <div>{status}</div>
-        <button onClick={saveOptions}>Save</button>
-      </div>
+      <Dialog
+        isOpen={isDialogOpen}
+        className="notify_dialog"
+        onClose={onDialogClose}
+        title="Setup notifications"
+        buttons={[
+          <button key="clode" className="button cancel" onClick={onDialogClose}>
+            Close
+          </button>,
+        ]}
+      >
+        <ul className="content">
+          <li>
+            <label>
+              <Checkbox checked={notify} onChange={e => setNotify(e.target.checked)} />
+              Enable notifications
+            </label>
+          </li>
+          <li>
+            <label>
+              Work time (min):
+              <input
+                className="input"
+                type="number"
+                value={workTime}
+                onChange={e => setWorkTime(e.target.valueAsNumber)}
+                disabled={!notify}
+                style={{ width: 90 }}
+              />
+            </label>
+          </li>
+          <li>
+            <label>
+              Rest time (min):
+              <input
+                className="input"
+                type="number"
+                value={restTime}
+                onChange={e => setRestTime(e.target.valueAsNumber)}
+                disabled={!notify}
+                style={{ width: 90 }}
+              />
+            </label>
+          </li>
+        </ul>
+      </Dialog>
+
       <div className="buttons">
+        <button className="button" onClick={onDialogOpen}>
+          Notifications
+        </button>
         <label className="button">
           Import logs
           <input type="file" onChange={importLogs} className="visually-hidden" />
@@ -104,7 +137,9 @@ function Options() {
           Export logs
         </button>
       </div>
+
       <hr />
+
       <Worksheet />
     </div>
   );

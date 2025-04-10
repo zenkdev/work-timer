@@ -41,46 +41,6 @@ b {
   font-style: normal;
 }
 
-.dialog {
-  background: #a4363e;
-  padding: 40px;
-  border-radius: 30px;
-  box-shadow:
-    5px 6px 0px -2px #620d15,
-    -6px 5px 0px -2px #620d15,
-    0px -2px 0px 2px #ee9191,
-    0px 10px 0px 0px #610c14,
-    0px -10px 0px 1px #e66565,
-    0px 0px 180px 90px #0d2f66;
-  max-width: 400px;
-  border: 0;
-  animation: zoomIn 0.5s ease both;
-  &::backdrop {
-    animation: fadeIn 1s ease both;
-    background: rgb(255 255 255 / 40%);
-    z-index: 2;
-    backdrop-filter: blur(20px);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes zoomIn {
-  from {
-    transform: scale(0);
-  }
-  to {
-    transform: scale(1);
-  }
-}
-
 .button {
   padding: 15px;
   border-radius: 20px;

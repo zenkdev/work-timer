@@ -1,0 +1,36 @@
+.checkbox {
+  display: inline-block;
+  width: 35px;
+  height: 35px;
+  cursor: pointer;
+  position: relative;
+  vertical-align: middle;
+
+  input {
+    position: absolute;
+    transform: scale(0);
+    width: 0;
+    height: 0;
+    font-size: 0;
+  }
+
+  input:checked ~ .check {
+    transform: rotate(45deg);
+    width: 14px;
+    margin-top: -4px;
+    margin-left: 12px;
+    border-color: #4e6217;
+    border-top-color: transparent;
+    border-left-color: transparent;
+    border-radius: 0;
+  }
+
+  .check {
+    display: block;
+    width: inherit;
+    height: inherit;
+    border: 4px solid #7e1522;
+    border-radius: 6px;
+    transition: all 0.375s;
+  }
+}
