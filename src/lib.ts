@@ -4,6 +4,10 @@ import { ACTION, ConvertedTimeRecord, TimeRecord } from './types';
 
 const TIME_FORMAT = 'HH:mm';
 
+export function formatTime(date?: dayjs.ConfigType) {
+  return dayjs(date).format(TIME_FORMAT);
+}
+
 export function secondsToString(value: number) {
   const hours = Math.floor(value / 3600);
   const minutes = Math.floor((value % 3600) / 60);
@@ -26,12 +30,12 @@ export function getTimeIntervals(records: ConvertedTimeRecord[]) {
     if (record.action === ACTION.LOGIN) {
       lastLogin = record.time;
     } else if (lastLogin) {
-      time.push([dayjs(lastLogin).format(TIME_FORMAT), dayjs(record.time).format(TIME_FORMAT)].join('-'));
+      time.push([formatTime(lastLogin), formatTime(record.time)].join('-'));
       lastLogin = undefined;
     }
   });
   if (lastLogin) {
-    time.push([dayjs(lastLogin).format(TIME_FORMAT), ''].join('-'));
+    time.push([formatTime(lastLogin), ''].join('-'));
   }
 
   return time.join(', ');
@@ -70,4 +74,8 @@ export async function addTimeRecord(value: TimeRecord) {
   const records = (items.records as TimeRecord[]) || [];
   records.push(value);
   chrome.storage.local.set({ records });
+}
+
+export function hasKeys(obj: Record<string, unknown>, ...keys: string[]) {
+  return Object.keys(obj).some(key => keys.includes(key));
 }

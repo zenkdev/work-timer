@@ -95,6 +95,8 @@ function Options() {
                 value={workTime}
                 onChange={e => setWorkTime(e.target.valueAsNumber)}
                 disabled={!notify}
+                min={1}
+                max={999}
                 style={{ width: 90 }}
               />
             </label>
@@ -108,6 +110,8 @@ function Options() {
                 value={restTime}
                 onChange={e => setRestTime(e.target.valueAsNumber)}
                 disabled={!notify}
+                min={1}
+                max={999}
                 style={{ width: 90 }}
               />
             </label>
