@@ -22,27 +22,16 @@ function Options() {
   }, []);
 
   const onDialogClose = useCallback(() => {
-    chrome.storage.sync.set({ notify, workTime, restTime }, () => {
-      console.log('set', { notify, workTime, restTime });
-      setIsDialogOpen(false);
-    });
+    chrome.storage.sync.set({ notify, workTime, restTime }, () => setIsDialogOpen(false));
   }, [notify, restTime, workTime]);
 
   useEffect(() => {
     // Restores select box and checkbox state using the preferences stored in chrome.storage.
-    chrome.storage.sync.get(
-      {
-        notify: false,
-        workTime: 45,
-        restTime: 15,
-      },
-      items => {
-        console.log('get', items);
-        setNotify(items.notify);
-        setWorkTime(items.workTime);
-        setRestTime(items.restTime);
-      },
-    );
+    chrome.storage.sync.get({ notify: false, workTime: 45, restTime: 15 }, items => {
+      setNotify(items.notify);
+      setWorkTime(items.workTime);
+      setRestTime(items.restTime);
+    });
   }, []);
 
   const importLogs = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -56,6 +45,7 @@ function Options() {
             throw new Error('Invalid action');
           }
           new Date(record.time);
+
           return { action: record.action as ACTION, time: record.time };
         });
         chrome.storage.local.set({ records: r });
@@ -84,7 +74,7 @@ function Options() {
         onClose={onDialogClose}
         title="Setup notifications"
         buttons={[
-          <button key="clode" className="button cancel" onClick={onDialogClose}>
+          <button key="clode" className="button cancel" onClick={() => setIsDialogOpen(false)}>
             Close
           </button>,
         ]}
@@ -92,8 +82,8 @@ function Options() {
         <ul className="content">
           <li>
             <label>
+              Enable notifications:
               <Checkbox checked={notify} onChange={e => setNotify(e.target.checked)} />
-              Enable notifications
             </label>
           </li>
           <li>

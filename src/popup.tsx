@@ -40,6 +40,7 @@ function Popup() {
       const todayStart = +dayjs().startOf('day');
       setSeconds(getTotalSeconds(records.filter(r => +r.time >= todayStart)));
     })();
+
     return () => {
       actual = false;
     };

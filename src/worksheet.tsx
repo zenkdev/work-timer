@@ -28,6 +28,7 @@ export function Worksheet() {
       }
     };
     chrome.storage.onChanged.addListener(listener);
+
     return () => {
       chrome.storage.onChanged.removeListener(listener);
     };
@@ -69,6 +70,7 @@ export function Worksheet() {
     records.forEach(record => {
       result.add(dateToOption(dayjs(record.time)));
     });
+
     return [...result.values()];
   }, [records]);
 

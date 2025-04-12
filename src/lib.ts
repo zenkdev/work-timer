@@ -8,6 +8,7 @@ export function secondsToString(value: number) {
   const hours = Math.floor(value / 3600);
   const minutes = Math.floor((value % 3600) / 60);
   const seconds = value % 60;
+
   return [
     hours && `${hours} hour${hours > 1 ? 's' : ''}`,
     (hours || minutes) && `${minutes} minute${minutes > 1 ? 's' : ''}`,
@@ -32,6 +33,7 @@ export function getTimeIntervals(records: ConvertedTimeRecord[]) {
   if (lastLogin) {
     time.push([dayjs(lastLogin).format(TIME_FORMAT), ''].join('-'));
   }
+
   return time.join(', ');
 }
 
@@ -50,6 +52,7 @@ export function getTotalSeconds(records: ConvertedTimeRecord[]) {
   if (lastLogin) {
     totalSeconds += Math.round(Math.min(+dayjs(lastLogin).endOf('day'), Date.now()) / 1000) - Math.round(+lastLogin / 1000);
   }
+
   return totalSeconds;
 }
 
@@ -58,6 +61,7 @@ export async function getRecordsFromStorage({ sort }: { sort?: 'asc' | 'desc' } 
   const records = ((items.records || []) as TimeRecord[]).map(r => ({ ...r, time: new Date(r.time) }));
   if (sort === 'desc') records.sort((a, b) => +b.time - +a.time);
   else if (sort === 'asc') records.sort((a, b) => +a.time - +b.time);
+
   return records;
 }
 

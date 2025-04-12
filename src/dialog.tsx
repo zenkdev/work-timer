@@ -10,44 +10,40 @@ interface DialogProps extends PropsWithChildren {
   buttons?: ReactNode[];
 }
 
-export function Dialog({ className, children, isOpen, onClose, title, buttons }: DialogProps) {
+export function Dialog({ className, children, isOpen = false, onClose, title, buttons }: DialogProps) {
   const modal = useRef<HTMLDialogElement>(null);
+  const prev = useRef(isOpen);
 
   useEffect(() => {
-    if (isOpen) {
-      modal.current?.showModal();
-    } else {
-      modal.current?.close();
+    if (isOpen !== prev.current) {
+      if (isOpen) {
+        modal.current?.showModal();
+      } else {
+        modal.current?.close();
+      }
     }
+    prev.current = isOpen;
   }, [isOpen]);
 
-  const handleClose = useCallback(() => {
-    modal.current?.close();
-    onClose?.();
-  }, [onClose]);
+  const onClick = useCallback((event: MouseEvent<HTMLDialogElement>) => {
+    if (modal.current) {
+      const modalRect = modal.current.getBoundingClientRect();
 
-  const handleClick = useCallback(
-    (event: MouseEvent<HTMLDialogElement>) => {
-      if (modal.current) {
-        const modalRect = modal.current.getBoundingClientRect();
-
-        if (
-          event.clientX < modalRect.left ||
-          event.clientX > modalRect.right ||
-          event.clientY < modalRect.top ||
-          event.clientY > modalRect.bottom
-        ) {
-          handleClose();
-        }
+      if (
+        event.clientX < modalRect.left ||
+        event.clientX > modalRect.right ||
+        event.clientY < modalRect.top ||
+        event.clientY > modalRect.bottom
+      ) {
+        modal.current?.close();
       }
-    },
-    [handleClose],
-  );
+    }
+  }, []);
 
   const dialogClassName = ['dialog', className].filter(Boolean).join(' ');
 
   return (
-    <dialog ref={modal} className={dialogClassName} onClick={handleClick} onClose={handleClose}>
+    <dialog ref={modal} className={dialogClassName} onClick={onClick} onClose={onClose}>
       {title ? <h2 className="dialog-title">{title}</h2> : null}
       {children ? <div className="dialog-content">{children}</div> : null}
       {buttons ? <div className="dialog-buttons">{buttons}</div> : null}

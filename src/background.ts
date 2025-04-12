@@ -6,14 +6,24 @@ import { getRecordsFromStorage } from './lib';
 
 chrome.alarms.onAlarm.addListener(async ({ name }) => {
   console.log('onAlarm', name);
-  const { every = 45, pause = 15 } = await chrome.storage.sync.get(['every', 'pause']);
+  const {
+    notify = false,
+    workTime = 45,
+    restTime = 15,
+  } = await chrome.storage.sync.get({
+    notify: false,
+    workTime: 45,
+    restTime: 15,
+  });
+
+  if (!notify) return;
 
   const records = await getRecordsFromStorage({ sort: 'desc' });
   if (records[0]?.action === ACTION.LOGIN) {
     const passed = dayjs(Date.now()).diff(records[0].time, 'minute');
-    const diff = passed % (every + pause);
+    const diff = passed % (workTime + restTime);
     console.log('passed', passed, 'diff', diff);
-    if (passed > 0 && (diff === every || diff === 0)) {
+    if (passed > 0 && (diff === workTime || diff === 0)) {
       const message = diff === 0 ? "Let's keep working!" : "Let's take a break!";
       console.log('notify', message);
       chrome.notifications.create(
@@ -36,18 +46,7 @@ chrome.alarms.onAlarm.addListener(async ({ name }) => {
 chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   console.log('onInstalled', reason);
 
-  // if (reason !== 'install') {
-  //   return;
-  // }
-
-  const reminder = await chrome.alarms.get('remider');
-  if (!reminder) {
-    console.log('create reminder');
-    chrome.alarms.create('remider', {
-      delayInMinutes: 1,
-      periodInMinutes: 1,
-    });
-  }
+  await createReminder();
 });
 
 chrome.runtime.onStartup.addListener(async () => {
@@ -57,12 +56,16 @@ chrome.runtime.onStartup.addListener(async () => {
   const text = records[0]?.action === ACTION.LOGIN ? 'in' : 'out';
   chrome.action.setBadgeText({ text });
 
+  await createReminder();
+});
+
+async function createReminder() {
   const reminder = await chrome.alarms.get('remider');
   if (!reminder) {
-    console.log('restore reminder');
+    console.log('create reminder');
     chrome.alarms.create('remider', {
       delayInMinutes: 1,
       periodInMinutes: 1,
     });
   }
-});
+}
