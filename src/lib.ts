@@ -76,10 +76,6 @@ export async function addTimeRecord(value: TimeRecord) {
   chrome.storage.local.set({ records });
 }
 
-export function hasKeys(obj: Record<string, unknown>, ...keys: string[]) {
-  return Object.keys(obj).some(key => keys.includes(key));
-}
-
 export async function getLastLogin() {
   const records = await getRecordsFromStorage({ sort: 'desc' });
 
