@@ -6,6 +6,7 @@ import { createRoot } from 'react-dom/client';
 import { csv2json, json2csv } from 'json-2-csv';
 
 import { ACTION, TimeRecord } from './types';
+import { Button } from './button';
 import { Checkbox } from './checkbox';
 import { Dialog } from './dialog';
 import { Worksheet } from './worksheet';
@@ -74,9 +75,9 @@ function Options() {
         onClose={onDialogClose}
         title="Setup notifications"
         buttons={[
-          <button key="clode" className="button cancel" onClick={() => setIsDialogOpen(false)}>
+          <Button key="close" onClick={() => setIsDialogOpen(false)} isCancel>
             Close
-          </button>,
+          </Button>,
         ]}
       >
         <ul className="content">
@@ -120,16 +121,12 @@ function Options() {
       </Dialog>
 
       <div className="buttons">
-        <button className="button" onClick={onDialogOpen}>
-          Notifications
-        </button>
-        <label className="button">
+        <Button onClick={onDialogOpen}>Notifications</Button>
+        <Button as="label">
           Import logs
           <input type="file" onChange={importLogs} className="visually-hidden" />
-        </label>
-        <button className="button" onClick={exportLogs}>
-          Export logs
-        </button>
+        </Button>
+        <Button onClick={exportLogs}>Export logs</Button>
       </div>
 
       <hr />

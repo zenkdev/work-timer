@@ -1,8 +1,7 @@
 import dayjs from 'dayjs';
 
 import iconUrl from './assets/icon.png';
-import { ACTION } from './types';
-import { formatTime, getRecordsFromStorage, hasKeys } from './lib';
+import { formatTime, getLastLogin, hasKeys } from './lib';
 
 const REST_ALARM = 'rest-alarm';
 const WORK_ALARM = 'work-alarm';
@@ -11,6 +10,16 @@ chrome.alarms.onAlarm.addListener(async ({ name }) => {
   console.log('onAlarm', name);
 
   if (name !== REST_ALARM && name !== WORK_ALARM) {
+    return;
+  }
+
+  const { notify } = await chrome.storage.sync.get({ notify: false });
+  const lastLogin = await getLastLogin();
+
+  if (!notify || !lastLogin) {
+    console.log('clear all alarms');
+    chrome.alarms.clearAll();
+
     return;
   }
 
@@ -63,8 +72,7 @@ function onStorageChanged(changes: Record<string, chrome.storage.StorageChange>,
 function checkAlarms() {
   (async () => {
     const { notify, workTime, restTime } = await chrome.storage.sync.get({ notify: false, workTime: 45, restTime: 15 });
-    const records = await getRecordsFromStorage({ sort: 'desc' });
-    const lastLogin = (records[0]?.action === ACTION.LOGIN && records[0].time) || undefined;
+    const lastLogin = await getLastLogin();
 
     if (!notify || !lastLogin) {
       console.log('clear all alarms');
@@ -86,8 +94,7 @@ function checkAlarms() {
 
 function updateBadgeText() {
   (async () => {
-    const records = await getRecordsFromStorage({ sort: 'desc' });
-    const text = records[0]?.action === ACTION.LOGIN ? 'in' : 'out';
-    chrome.action.setBadgeText({ text });
+    const lastLogin = await getLastLogin();
+    chrome.action.setBadgeText({ text: lastLogin ? 'in' : 'out' });
   })();
 }

@@ -4,6 +4,7 @@ import React, { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'r
 import dayjs, { Dayjs } from 'dayjs';
 
 import { ACTION, ConvertedTimeRecord, TimeRecord } from './types';
+import { Button } from './button';
 import { Dialog } from './dialog';
 import { getRecordsFromStorage, getTimeIntervals, getTotalSeconds } from './lib';
 
@@ -161,12 +162,12 @@ export function Worksheet() {
         onClose={onDialogClose}
         title="Add work time"
         buttons={[
-          <button key="submit" className="button" onClick={onSubmit}>
+          <Button key="submit" onClick={onSubmit}>
             Submit
-          </button>,
-          <button key="cancel" className="button cancel" onClick={onDialogClose}>
+          </Button>,
+          <Button key="cancel" onClick={onDialogClose} isCancel>
             Cancel
-          </button>,
+          </Button>,
         ]}
       >
         <ul className="content">

@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import { ACTION } from './types';
+import { Button } from './button';
 import { Counter } from './counter';
 import { addTimeRecord, getRecordsFromStorage, getTotalSeconds, secondsToString } from './lib';
 
@@ -71,12 +72,10 @@ function Popup() {
         </li>
       </ul>
       <div className="buttons">
-        <button className="button" onClick={runAction}>
+        <Button isCancel={online} onClick={runAction}>
           {(online && 'logout') || 'login'}
-        </button>
-        <button className="button" onClick={openOptionsPage}>
-          options
-        </button>
+        </Button>
+        <Button onClick={openOptionsPage}>options</Button>
       </div>
     </div>
   );
