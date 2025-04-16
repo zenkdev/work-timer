@@ -41,15 +41,20 @@ function Options() {
       try {
         const csv = await file.text();
         const js = csv2json(csv) as TimeRecord[];
-        const r = js.map(record => {
+
+        const records = js.map(record => {
           if (record.action !== 'login' && record.action !== 'logout') {
             throw new Error('Invalid action');
           }
-          new Date(record.time);
 
-          return { action: record.action as ACTION, time: record.time };
+          return { action: record.action as ACTION, time: new Date(record.time).toISOString() };
         });
-        chrome.storage.local.set({ records: r });
+        chrome.storage.local.set({ records });
+
+        records.sort((a, b) => +new Date(b.time) - +new Date(a.time));
+        const lastLogin = records[0].action === ACTION.LOGIN ? records[0].time : null;
+
+        chrome.storage.sync.set({ lastLogin });
       } catch (error) {
         console.error('Invalid file.', error);
       }

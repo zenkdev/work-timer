@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 
-import { ACTION, ConvertedTimeRecord, TimeRecord } from './types';
+import { ACTION, ConvertedTimeRecord, LocalStorage, SORT_ORDER } from './types';
 
 const TIME_FORMAT = 'HH:mm';
 
@@ -60,24 +60,23 @@ export function getTotalSeconds(records: ConvertedTimeRecord[]) {
   return totalSeconds;
 }
 
-export async function getRecordsFromStorage({ sort }: { sort?: 'asc' | 'desc' } = {}) {
-  const items = await chrome.storage.local.get('records');
-  const records = ((items.records || []) as TimeRecord[]).map(r => ({ ...r, time: new Date(r.time) }));
-  if (sort === 'desc') records.sort((a, b) => +b.time - +a.time);
-  else if (sort === 'asc') records.sort((a, b) => +a.time - +b.time);
+export async function getRecordsFromStorage(order?: SORT_ORDER) {
+  const items = await chrome.storage.local.get<LocalStorage>('records');
+  const records = (items.records || []).map(r => ({ ...r, time: new Date(r.time) }));
+  if (order === SORT_ORDER.DESC) records.sort((a, b) => +b.time - +a.time);
+  else if (order === SORT_ORDER.ASC) records.sort((a, b) => +a.time - +b.time);
 
   return records;
 }
 
-export async function addTimeRecord(value: TimeRecord) {
-  const items = await chrome.storage.local.get('records');
-  const records = (items.records as TimeRecord[]) || [];
-  records.push(value);
+export async function addAction(action: ACTION, time: Date = new Date()) {
+  const items = await chrome.storage.local.get<LocalStorage>('records');
+
+  const record = { action, time: time.toISOString() };
+  const records = (items.records || []).concat(record);
   chrome.storage.local.set({ records });
-}
 
-export async function getLastLogin() {
-  const records = await getRecordsFromStorage({ sort: 'desc' });
+  const lastLogin = record.action === ACTION.LOGIN ? record.time : null;
 
-  return (records[0]?.action === ACTION.LOGIN && records[0].time) || undefined;
+  chrome.storage.sync.set({ lastLogin });
 }

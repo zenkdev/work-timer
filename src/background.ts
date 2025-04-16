@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 
 import iconUrl from './assets/icon.png';
-import { getLastLogin } from './lib';
+import { SyncStorage } from './types';
 
 const ALARM_NAME = 'notify';
 const ALARM_OPTIONS = { type: 'basic' as const, title: 'Work Timer', iconUrl, requireInteraction: true };
@@ -13,13 +13,12 @@ function noop() {
 chrome.alarms.onAlarm.addListener(async ({ name }) => {
   console.log('onAlarm', name);
 
-  const { notify, workTime, restTime } = await chrome.storage.sync.get({ notify: false, workTime: 45, restTime: 15 });
+  const settings = await chrome.storage.sync.get<SyncStorage>(['notify', 'workTime', 'restTime', 'lastLogin']);
+  if (!settings.notify || !settings.lastLogin) return;
 
-  if (!notify) return;
-
-  const lastLogin = await getLastLogin();
-  if (!lastLogin) return;
-
+  const workTime = settings.workTime || 45;
+  const restTime = settings.restTime || 15;
+  const lastLogin = dayjs(settings.lastLogin);
   const passed = dayjs(Date.now()).diff(lastLogin, 'minute');
   const diff = passed % (workTime + restTime);
 
@@ -57,7 +56,7 @@ function createAlarm() {
 
 function updateBadgeText() {
   (async () => {
-    const lastLogin = await getLastLogin();
+    const { lastLogin } = await chrome.storage.sync.get({ lastLogin: null });
     chrome.action.setBadgeText({ text: lastLogin ? 'in' : 'out' });
   })();
 }

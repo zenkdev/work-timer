@@ -5,10 +5,10 @@ import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 
-import { ACTION } from './types';
+import { ACTION, SORT_ORDER } from './types';
 import { Button } from './button';
 import { Counter } from './counter';
-import { addTimeRecord, getRecordsFromStorage, getTotalSeconds, secondsToString } from './lib';
+import { addAction, getRecordsFromStorage, getTotalSeconds, secondsToString } from './lib';
 
 function Popup() {
   const [online, setOnline] = useState(false);
@@ -35,7 +35,7 @@ function Popup() {
   useEffect(() => {
     let actual = true;
     (async () => {
-      const records = await getRecordsFromStorage({ sort: 'desc' });
+      const records = await getRecordsFromStorage(SORT_ORDER.DESC);
       if (!actual) return;
       setOnline(records[0]?.action === ACTION.LOGIN);
       const todayStart = +dayjs().startOf('day');
@@ -50,7 +50,7 @@ function Popup() {
   const state = (online && 'online') || 'offline';
 
   const runAction = async () => {
-    await addTimeRecord({ action: (online && ACTION.LOGOUT) || ACTION.LOGIN, time: new Date().toJSON() });
+    await addAction((online && ACTION.LOGOUT) || ACTION.LOGIN);
     setOnline(!online);
   };
 

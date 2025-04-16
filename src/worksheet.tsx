@@ -3,7 +3,7 @@ import './worksheet.less';
 import React, { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 
-import { ACTION, ConvertedTimeRecord, TimeRecord } from './types';
+import { ACTION, ConvertedTimeRecord, SORT_ORDER, TimeRecord } from './types';
 import { Button } from './button';
 import { Dialog } from './dialog';
 import { getRecordsFromStorage, getTimeIntervals, getTotalSeconds } from './lib';
@@ -38,7 +38,7 @@ export function Worksheet() {
   useEffect(() => {
     let actual = true;
     (async () => {
-      const result = await getRecordsFromStorage({ sort: 'desc' });
+      const result = await getRecordsFromStorage(SORT_ORDER.DESC);
       if (!actual) return;
       setRecords(result);
       setStart(dayjs(result[0].time).startOf('month'));

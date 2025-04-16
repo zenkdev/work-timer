@@ -12,3 +12,12 @@ export interface ConvertedTimeRecord {
   action: ACTION;
   time: Date;
 }
+
+export type LocalStorage = Partial<{ records: TimeRecord[] }>;
+
+export type SyncStorage = Partial<{ notify: boolean; workTime: number; restTime: number; lastLogin: string }>;
+
+export enum SORT_ORDER {
+  ASC = 'asc',
+  DESC = 'desc',
+}
