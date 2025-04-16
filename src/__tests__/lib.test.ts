@@ -1,5 +1,5 @@
-import { ACTION } from '../types';
-import { getTimeIntervals, getTotalSeconds, secondsToString } from '../lib';
+import { ACTION, SORT_ORDER } from '../types';
+import { addAction, getRecordsFromStorage, getTimeIntervals, getTotalSeconds, secondsToString } from '../lib';
 
 describe('secondsToString', () => {
   test('should be "1 second"', () => {
@@ -71,5 +71,98 @@ describe('getTotalSeconds', () => {
         { action: ACTION.LOGIN, time: new Date(2025, 3, 1, 13, 30) },
       ]),
     ).toBe(45000);
+  });
+});
+
+describe('getRecordsFromStorage', () => {
+  const records = [
+    { action: 'login', time: '2025-04-02T09:00:00.000Z' },
+    { action: 'logout', time: '2025-04-02T12:00:00.000Z' },
+    { action: 'login', time: '2025-04-01T09:00:00.000Z' },
+    { action: 'logout', time: '2025-04-01T12:00:00.000Z' },
+    { action: 'logout', time: '2025-04-03T12:00:00.000Z' },
+    { action: 'login', time: '2025-04-03T09:00:00.000Z' },
+  ];
+
+  beforeEach(() => {
+    (chrome.storage.local.get as jest.Mock).mockImplementation(() => ({ records }));
+  });
+
+  test('unsorted', async () => {
+    const expected = records.map(record => ({ ...record, time: new Date(record.time) }));
+
+    const result = await getRecordsFromStorage();
+
+    expect(result).toStrictEqual(expected);
+  });
+
+  test('asc', async () => {
+    const expected = records.map(record => ({ ...record, time: new Date(record.time) })).sort((a, b) => +a.time - +b.time);
+
+    const result = await getRecordsFromStorage(SORT_ORDER.ASC);
+
+    expect(result).toStrictEqual(expected);
+  });
+
+  test('desc', async () => {
+    const expected = records.map(record => ({ ...record, time: new Date(record.time) })).sort((a, b) => +b.time - +a.time);
+
+    const result = await getRecordsFromStorage(SORT_ORDER.DESC);
+
+    expect(result).toStrictEqual(expected);
+  });
+});
+
+describe('addAction', () => {
+  const now = new Date(2025, 3, 10, 12, 0, 0);
+  const records = [
+    { action: 'login', time: '2025-04-01T09:00:00.000Z' },
+    { action: 'logout', time: '2025-04-01T12:00:00.000Z' },
+  ];
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+    jest.useFakeTimers({ now });
+    (chrome.storage.local.get as jest.Mock).mockImplementation(() => ({ records }));
+  });
+
+  test('login', async () => {
+    const action = ACTION.LOGIN;
+    const expected = {
+      local: { records: [...records, { action, time: now.toISOString() }] },
+      sync: { lastLogin: now.toISOString() },
+    };
+
+    await addAction(action);
+
+    expect(chrome.storage.local.set).toHaveBeenCalledWith(expected.local);
+    expect(chrome.storage.sync.set).toHaveBeenCalledWith(expected.sync);
+  });
+
+  test('logout', async () => {
+    const action = ACTION.LOGOUT;
+    const expected = {
+      local: { records: [...records, { action, time: now.toISOString() }] },
+      sync: { lastLogin: null },
+    };
+
+    await addAction(action);
+
+    expect(chrome.storage.local.set).toHaveBeenCalledWith(expected.local);
+    expect(chrome.storage.sync.set).toHaveBeenCalledWith(expected.sync);
+  });
+
+  test('custom time', async () => {
+    const action = ACTION.LOGIN;
+    const time = new Date(2025, 3, 16);
+    const expected = {
+      local: { records: [...records, { action, time: time.toISOString() }] },
+      sync: { lastLogin: time.toISOString() },
+    };
+
+    await addAction(action, time);
+
+    expect(chrome.storage.local.set).toHaveBeenCalledWith(expected.local);
+    expect(chrome.storage.sync.set).toHaveBeenCalledWith(expected.sync);
   });
 });
