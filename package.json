@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@swc/helpers": "^0.5.15",
-    "cross-env": "^7.0.3",
+    "cross-env": "^10.0.0",
     "dayjs": "^1.11.13",
     "json-2-csv": "^5.5.9",
     "react": "^19.0.0",
