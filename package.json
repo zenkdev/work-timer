@@ -21,7 +21,6 @@
   },
   "dependencies": {
     "@swc/helpers": "^0.5.15",
-    "cross-env": "^7.0.3",
     "dayjs": "^1.11.13",
     "json-2-csv": "^5.5.9",
     "react": "^19.0.0",
@@ -39,6 +38,7 @@
     "@types/jest": "^30.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "cross-env": "^10.0.0",
     "eslint": "^9.21.0",
     "eslint-plugin-react": "^7.37.4",
     "eslint-plugin-react-hooks": "^5.2.0",
