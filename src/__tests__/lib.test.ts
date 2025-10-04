@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+
 import { ACTION, SORT_ORDER } from '../types';
 import { addAction, getRecordsFromStorage, getTimeIntervals, getTotalSeconds, secondsToString } from '../lib';
 
@@ -85,7 +87,7 @@ describe('getRecordsFromStorage', () => {
   ];
 
   beforeEach(() => {
-    (chrome.storage.local.get as jest.Mock).mockImplementation(() => ({ records }));
+    vi.mocked(chrome.storage.local.get).mockImplementation(() => ({ records }));
   });
 
   test('unsorted', async () => {
@@ -121,9 +123,9 @@ describe('addAction', () => {
   ];
 
   beforeEach(() => {
-    jest.resetAllMocks();
-    jest.useFakeTimers({ now });
-    (chrome.storage.local.get as jest.Mock).mockImplementation(() => ({ records }));
+    vi.clearAllMocks();
+    vi.useFakeTimers({ now });
+    vi.mocked(chrome.storage.local.get).mockImplementation(() => ({ records }));
   });
 
   test('login', async () => {
