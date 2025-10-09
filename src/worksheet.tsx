@@ -1,7 +1,7 @@
 import './worksheet.less';
 
-import React, { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { ACTION, ConvertedTimeRecord, SORT_ORDER, TimeRecord } from './types';
 import { Button } from './button';
@@ -16,7 +16,31 @@ export function Worksheet() {
   const [counter, setCounter] = useState(0);
   const [start, setStart] = useState(() => dayjs().startOf('month'));
   const [records, setRecords] = useState<ConvertedTimeRecord[]>([]);
-  const [worksheet, setWorksheet] = useState<WorksheetData>([]);
+  const worksheet = useMemo(() => {
+    const result: WorksheetData = [];
+    let begin = dayjs(start);
+    const end = dayjs(begin).endOf('month');
+    while (+begin < +end) {
+      const filtered = records.filter(r => dayjs(r.time).format(DATE_FORMAT) === begin.format(DATE_FORMAT));
+      result.push({
+        date: begin.format(DATE_FORMAT),
+        dow: begin.format('ddd'),
+        time: getTimeIntervals(filtered),
+        hours: Math.round(getTotalSeconds(filtered) / 360) / 10,
+      });
+      begin = begin.add(1, 'day');
+    }
+
+    return result;
+  }, [start, records]);
+  const options = useMemo(() => {
+    const result = new Set<string>();
+    records.forEach(record => {
+      result.add(dateToOption(dayjs(record.time)));
+    });
+
+    return [...result.values()];
+  }, [records]);
 
   const [date, setDate] = useState('');
   const [action, setAction] = useState(ACTION.LOGIN);
@@ -49,32 +73,6 @@ export function Worksheet() {
     };
   }, [counter]);
 
-  useEffect(() => {
-    let begin = dayjs(start);
-    const end = dayjs(begin).endOf('month');
-    const result: WorksheetData = [];
-    while (+begin < +end) {
-      const filtered = records.filter(r => dayjs(r.time).format(DATE_FORMAT) === begin.format(DATE_FORMAT));
-      result.push({
-        date: begin.format(DATE_FORMAT),
-        dow: begin.format('ddd'),
-        time: getTimeIntervals(filtered),
-        hours: Math.round(getTotalSeconds(filtered) / 360) / 10,
-      });
-      begin = begin.add(1, 'day');
-    }
-    setWorksheet(result);
-  }, [start, records]);
-
-  const options = useMemo(() => {
-    const result = new Set<string>();
-    records.forEach(record => {
-      result.add(dateToOption(dayjs(record.time)));
-    });
-
-    return [...result.values()];
-  }, [records]);
-
   const onChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value;
     const [month, year] = value.split(', ');
@@ -99,17 +97,22 @@ export function Worksheet() {
   const onSubmit = () => {
     const [day, month, year] = date.split('.');
     const [hour, minute] = time.split(':');
-    chrome.storage.local.get('records', items => {
-      const result = (items.records || []) as TimeRecord[];
-      result.push({
-        time: new Date(+year, +month - 1, +day, +hour, +minute, 0, 0).toISOString(),
-        action,
+
+    try {
+      const isoTime = new Date(+year, +month - 1, +day, +hour, +minute, 0, 0).toISOString();
+
+      chrome.storage.local.get('records', items => {
+        const result = (items.records || []) as TimeRecord[];
+        result.push({ time: isoTime, action });
+        result.sort((a, b) => +dayjs(a.time) - +dayjs(b.time));
+        chrome.storage.local.set({ records: result });
+        onDialogClose();
+        setCounter(p => p + 1);
       });
-      result.sort((a, b) => +dayjs(a.time) - +dayjs(b.time));
-      chrome.storage.local.set({ records: result });
-      onDialogClose();
-      setCounter(p => p + 1);
-    });
+    } catch (error) {
+      // todo: add error message to the dialog
+      console.error(error);
+    }
   };
 
   const totalHours = Math.round(worksheet.reduce((acc, { hours }) => acc + hours, 0) * 10) / 10;

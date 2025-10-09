@@ -1,3 +1,5 @@
+import '@testing-library/jest-dom';
+
 import { vi } from 'vitest';
 
 // Mock Chrome APIs for testing
@@ -14,6 +16,10 @@ const mockChrome = {
       set: vi.fn(),
       remove: vi.fn(),
       clear: vi.fn(),
+    },
+    onChanged: {
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
     },
   },
   runtime: {
