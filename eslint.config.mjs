@@ -40,4 +40,11 @@ export default [
     },
   },
   { ignores: ['dist/', '**/*.d.ts'] },
+  {
+    files: ['scripts/**/*.js'],
+    rules: {
+      'no-undef': 'off',
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
 ];
