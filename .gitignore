@@ -14,3 +14,4 @@ dist/
 
 # eslint
 .eslintcache
+.npmrc
