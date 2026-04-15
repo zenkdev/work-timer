@@ -1,6 +1,6 @@
 {
   "name": "work-timer",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Chrome Extension, TypeScript, Visual Studio Code",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "build": "rspack build",
     "rsdoctor": "cross-env RSDOCTOR=true npm run build",
     "clean": "rimraf dist",
-    "test": "vitest",
+    "test": "vitest run",
     "test:ui": "vitest --ui",
     "format": "prettier --write .",
     "lint": "eslint .",
