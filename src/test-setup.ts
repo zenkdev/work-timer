@@ -37,7 +37,4 @@ const mockChrome = {
 };
 
 // Make Chrome APIs available globally
-Object.assign(global, { chrome: mockChrome });
-
-// Make vi available globally for easier testing
-Object.assign(global, { vi });
+vi.stubGlobal('chrome', mockChrome);

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Work timer",
   "description": "Chrome Extension, TypeScript, Visual Studio Code",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "options_ui": {
     "page": "options.html",
     "open_in_tab": true
@@ -14,7 +14,8 @@
     "default_popup": "popup.html"
   },
   "background": {
-    "service_worker": "js/background.js"
+    "service_worker": "js/background.js",
+    "type": "module"
   },
   "permissions": [
     "storage",

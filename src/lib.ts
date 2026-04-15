@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
-
-import { ACTION, ConvertedTimeRecord, LocalStorage, SORT_ORDER } from './types';
+import { ACTION, type ConvertedTimeRecord, type LocalStorage, SORT_ORDER } from './types';
 
 const TIME_FORMAT = 'HH:mm';
 

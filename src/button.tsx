@@ -1,6 +1,6 @@
 import './button.less';
 
-import { ComponentType, MouseEventHandler, PropsWithChildren } from 'react';
+import type { ComponentType, MouseEventHandler, PropsWithChildren } from 'react';
 
 interface ButtonProps extends PropsWithChildren {
   onClick?: MouseEventHandler<HTMLButtonElement>;

@@ -1,12 +1,11 @@
 import './worksheet.less';
 
 import dayjs, { Dayjs } from 'dayjs';
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
-
-import { ACTION, ConvertedTimeRecord, SORT_ORDER, TimeRecord } from './types';
+import { type ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { Button } from './button';
 import { Dialog } from './dialog';
 import { getRecordsFromStorage, getTimeIntervals, getTotalSeconds } from './lib';
+import { ACTION, type ConvertedTimeRecord, SORT_ORDER, type TimeRecord } from './types';
 
 const DATE_FORMAT = 'DD.MM.YYYY';
 

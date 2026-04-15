@@ -1,6 +1,6 @@
 import './checkbox.less';
 
-import { InputHTMLAttributes } from 'react';
+import type { InputHTMLAttributes } from 'react';
 
 type CheckboxProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type'>;
 

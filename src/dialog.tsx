@@ -1,6 +1,6 @@
 import './dialog.less';
 
-import { MouseEvent, PropsWithChildren, ReactNode, useCallback, useEffect, useRef } from 'react';
+import { type MouseEvent, type PropsWithChildren, type ReactNode, useCallback, useEffect, useRef } from 'react';
 
 interface DialogProps extends PropsWithChildren {
   className?: string;

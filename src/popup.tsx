@@ -4,12 +4,12 @@ import './popup.less';
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-
-import { ACTION, SORT_ORDER } from './types';
 import { Button } from './button';
 import { Counter } from './counter';
 import { addAction, getRecordsFromStorage, getTotalSeconds, secondsToString } from './lib';
+import { ACTION, SORT_ORDER } from './types';
 
+// eslint-disable-next-line react-refresh/only-export-components
 function Popup() {
   const [online, setOnline] = useState(false);
   const [seconds, setSeconds] = useState(0);
@@ -19,7 +19,7 @@ function Popup() {
 
     if (!online) return;
 
-    let interval: NodeJS.Timer;
+    let interval: number;
     let lastTime = Math.round(+Date.now() / 1000);
     const cb = () => {
       const thisTime = Math.round(+Date.now() / 1000);

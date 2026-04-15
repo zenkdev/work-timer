@@ -1,12 +1,11 @@
-import dayjs from 'dayjs';
-import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
-
-import { ACTION, ConvertedTimeRecord, SORT_ORDER } from '../types';
-import { Worksheet } from '../worksheet';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { getRecordsFromStorage } from '../lib';
+import { ACTION, type ConvertedTimeRecord, SORT_ORDER } from '../types';
+import { Worksheet } from '../worksheet';
 
 // Mock the lib module
 vi.mock('../lib', () => ({

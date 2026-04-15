@@ -1,7 +1,6 @@
 import dayjs from 'dayjs';
-
 import iconUrl from './assets/icon.png';
-import { SyncStorage } from './types';
+import type { SyncStorage } from './types';
 
 const ALARM_NAME = 'notify';
 const ALARM_OPTIONS = { type: 'basic' as const, title: 'Work Timer', iconUrl, requireInteraction: true };

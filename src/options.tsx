@@ -1,16 +1,16 @@
 import './_common.less';
 import './options.less';
 
-import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
-import { createRoot } from 'react-dom/client';
 import { csv2json, json2csv } from 'json-2-csv';
-
-import { ACTION, TimeRecord } from './types';
+import React, { type ChangeEvent, useCallback, useEffect, useState } from 'react';
+import { createRoot } from 'react-dom/client';
 import { Button } from './button';
 import { Checkbox } from './checkbox';
 import { Dialog } from './dialog';
+import { ACTION, type TimeRecord } from './types';
 import { Worksheet } from './worksheet';
 
+// eslint-disable-next-line react-refresh/only-export-components
 function Options() {
   const [notify, setNotify] = useState(false);
   const [workTime, setWorkTime] = useState(45);
@@ -29,9 +29,9 @@ function Options() {
   useEffect(() => {
     // Restores select box and checkbox state using the preferences stored in chrome.storage.
     chrome.storage.sync.get({ notify: false, workTime: 45, restTime: 15 }, items => {
-      setNotify(items.notify);
-      setWorkTime(items.workTime);
-      setRestTime(items.restTime);
+      setNotify(items.notify as boolean);
+      setWorkTime(items.workTime as number);
+      setRestTime(items.restTime as number);
     });
   }, []);
 
