@@ -52,7 +52,7 @@
     "husky": "^9.1.7",
     "jsdom": "^29.0.2",
     "less": "^4.6.4",
-    "less-loader": "^12.3.2",
+    "less-loader": "^13.0.0",
     "lint-staged": "^17.0.0",
     "prettier": "^3.8.3",
     "typescript": "^6.0.2",
