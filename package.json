@@ -39,7 +39,7 @@
     "@types/node": "25.9.4",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "@typescript/native-preview": "7.0.0-dev.20260702.3",
+    "@typescript/native-preview": "7.0.0-dev.20260703.1",
     "@vitejs/plugin-react": "6.0.3",
     "@vitest/ui": "4.1.9",
     "babel-plugin-react-compiler": "1.0.0",
